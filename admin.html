@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>King Uniforms - Admin Dashboard</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Initialize Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDEIvgnnOmz1dkxvMRzaK1JzIf5H_L5JE",
+            authDomain: "king-uniforms-drivers.firebaseapp.com",
+            projectId: "king-uniforms-drivers",
+            storageBucket: "king-uniforms-drivers.firebasestorage.app",
+            messagingSenderId: "543363951334",
+            appId: "1:543363951334:web:7300f1dc4b2b9a47f12927",
+            measurementId: "G-NW0DZ41JXD"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+    
+    <style>
+        :root {
+            --king-red: #E31837;
+            --king-blue: #003B71;
+            --king-yellow: #FFB81C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .login-container, .dashboard-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 20px auto;
+            border-top: 5px solid var(--king-blue);
+        }
+
+        .login-container {
+            max-width: 400px;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo-container img {
+            max-width: 300px;
+            height: auto;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--king-blue);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--king-blue);
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--king-blue);
+            box-shadow: 0 0 0 3px rgba(0, 59, 113, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--king-red);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 5px 0;
+        }
+
+        button:hover {
+            background-color: #c41230;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(227, 24, 55, 0.2);
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .data-table th {
+            background-color: var(--king-blue);
+            color: white;
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .button-group button {
+            flex: 1;
+        }
+
+        .export-btn {
+            background-color: var(--king-yellow);
+            color: var(--king-blue);
+        }
+
+        .export-btn:hover {
+            background-color: #e5a619;
+        }
+
+        #dashboard {
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--king-blue);
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 59, 113, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--king-blue);
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="login" class="login-container">
+        <div class="logo-container">
+            <img src="King_Uniforms_LOGO.png" alt="King Uniforms Logo">
+        </div>
+        <h1>Admin Login</h1>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" required>
+        </div>
+        <button onclick="login()">Login</button>
+    </div>
+
+    <div id="dashboard" class="dashboard-container">
+        <div class="logo-container">
+            <img src="King_Uniforms_LOGO.png" alt="King Uniforms Logo">
+        </div>
+        <h1>Admin Dashboard</h1>
+        
+        <div class="filters">
+            <div class="form-group">
+                <label for="driverFilter">Driver</label>
+                <select id="driverFilter">
+                    <option value="">All Drivers</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="clientFilter">Client</label>
+                <select id="clientFilter">
+                    <option value="">All Clients</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dateFilter">Date Range</label>
+                <select id="dateFilter">
+                    <option value="all">All Time</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button onclick="applyFilters()">Apply Filters</button>
+            <button class="export-btn" onclick="exportToExcel()">Export to Excel</button>
+        </div>
+
+        <div id="loading" class="loading">Exporting data...</div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Driver</th>
+                    <th>Client</th>
+                    <th>Carts</th>
+                    <th>Pounds</th>
+                </tr>
+            </thead>
+            <tbody id="dataTableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // Simple password protection
+        const ADMIN_PASSWORD = "KingAdmin2024"; // Change this to your desired password
+
+        function login() {
+            const password = document.getElementById('password').value;
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadData();
+            } else {
+                alert('Incorrect password');
+            }
+        }
+
+        let allData = [];
+
+        function loadData() {
+            db.collection('driverEntries')
+                .orderBy('timestamp', 'desc')
+                .get()
+                .then((querySnapshot) => {
+                    allData = [];
+                    const drivers = new Set();
+                    const clients = new Set();
+
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        allData.push(data);
+                        drivers.add(data.driverName);
+                        clients.add(data.clientName);
+                    });
+
+                    // Populate filter dropdowns
+                    const driverFilter = document.getElementById('driverFilter');
+                    const clientFilter = document.getElementById('clientFilter');
+
+                    drivers.forEach(driver => {
+                        const option = document.createElement('option');
+                        option.value = driver;
+                        option.textContent = driver;
+                        driverFilter.appendChild(option);
+                    });
+
+                    clients.forEach(client => {
+                        const option = document.createElement('option');
+                        option.value = client;
+                        option.textContent = client;
+                        clientFilter.appendChild(option);
+                    });
+
+                    displayData(allData);
+                });
+        }
+
+        function applyFilters() {
+            const driver = document.getElementById('driverFilter').value;
+            const client = document.getElementById('clientFilter').value;
+            const dateRange = document.getElementById('dateFilter').value;
+
+            let filteredData = allData;
+
+            if (driver) {
+                filteredData = filteredData.filter(entry => entry.driverName === driver);
+            }
+            if (client) {
+                filteredData = filteredData.filter(entry => entry.clientName === client);
+            }
+
+            const now = new Date();
+            if (dateRange === 'today') {
+                filteredData = filteredData.filter(entry => {
+                    const entryDate = new Date(entry.timestamp.toDate());
+                    return entryDate.toDateString() === now.toDateString();
+                });
+            } else if (dateRange === 'week') {
+                const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+                filteredData = filteredData.filter(entry => {
+                    const entryDate = new Date(entry.timestamp.toDate());
+                    return entryDate >= weekAgo;
+                });
+            } else if (dateRange === 'month') {
+                const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                filteredData = filteredData.filter(entry => {
+                    const entryDate = new Date(entry.timestamp.toDate());
+                    return entryDate >= monthAgo;
+                });
+            }
+
+            displayData(filteredData);
+        }
+
+        function displayData(data) {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
+
+            data.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entry.timestamp.toDate().toLocaleString()}</td>
+                    <td>${entry.driverName}</td>
+                    <td>${entry.clientName}</td>
+                    <td>${entry.carts}</td>
+                    <td>${entry.pounds}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function exportToExcel() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+
+            const driver = document.getElementById('driverFilter').value;
+            const client = document.getElementById('clientFilter').value;
+            const dateRange = document.getElementById('dateFilter').value;
+
+            let filename = 'driver_entries';
+            if (driver) filename += `_${driver}`;
+            if (client) filename += `_${client}`;
+            if (dateRange !== 'all') filename += `_${dateRange}`;
+            filename += '.xlsx';
+
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Get table data
+            const table = document.getElementById('dataTableBody');
+            const rows = Array.from(table.getElementsByTagName('tr'));
+            const data = rows.map(row => {
+                const cells = row.getElementsByTagName('td');
+                return Array.from(cells).map(cell => cell.textContent);
+            });
+
+            // Add headers
+            const headers = ['Date', 'Driver', 'Client', 'Carts', 'Pounds'];
+            data.unshift(headers);
+
+            // Create worksheet
+            const ws = XLSX.utils.aoa_to_sheet(data);
+
+            // Set column widths
+            const colWidths = [
+                { wch: 20 }, // Date
+                { wch: 15 }, // Driver
+                { wch: 15 }, // Client
+                { wch: 10 }, // Carts
+                { wch: 10 }  // Pounds
+            ];
+            ws['!cols'] = colWidths;
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Driver Entries');
+
+            // Generate Excel file
+            XLSX.writeFile(wb, filename);
+            
+            loading.style.display = 'none';
+        }
+    </script>
+    <!-- Add SheetJS library for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</body>
+</html> 

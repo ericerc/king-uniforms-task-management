@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>King Uniforms - Daily Tasks</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Initialize Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDEIvgnnOmz1dkxvMRzaK1JzIf5H_L5JE",
+            authDomain: "king-uniforms-drivers.firebaseapp.com",
+            projectId: "king-uniforms-drivers",
+            storageBucket: "king-uniforms-drivers.firebasestorage.app",
+            messagingSenderId: "543363951334",
+            appId: "1:543363951334:web:7300f1dc4b2b9a47f12927",
+            measurementId: "G-NW0DZ41JXD"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+    
+    <style>
+        :root {
+            --king-red: #E31837;
+            --king-blue: #003B71;
+            --king-yellow: #FFB81C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 20px auto;
+            border-top: 5px solid var(--king-blue);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo-container img {
+            max-width: 300px;
+            height: auto;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--king-blue);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .area-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .area-button {
+            padding: 12px;
+            background-color: white;
+            border: 2px solid var(--king-blue);
+            border-radius: 6px;
+            color: var(--king-blue);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .area-button:hover {
+            background-color: var(--king-blue);
+            color: white;
+        }
+
+        .area-button.active {
+            background-color: var(--king-blue);
+            color: white;
+        }
+
+        .area-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 59, 113, 0.1);
+        }
+
+        .task-list {
+            margin-top: 2rem;
+        }
+
+        .task-item {
+            background-color: #f9f9f9;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .task-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .employee-select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            color: var(--king-blue);
+            font-size: 14px;
+            margin-top: 0.5rem;
+        }
+
+        .employee-select:focus {
+            outline: none;
+            border-color: var(--king-blue);
+        }
+
+        .task-completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--king-blue);
+        }
+
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--king-blue);
+        }
+
+        .no-tasks {
+            text-align: center;
+            padding: 2rem;
+            color: var(--king-blue);
+            font-style: italic;
+        }
+
+        .priority-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .priority-1 { background-color: #28a745; }
+        .priority-2 { background-color: #17a2b8; }
+        .priority-3 { background-color: #ffc107; }
+        .priority-4 { background-color: #fd7e14; }
+        .priority-5 { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="King_Uniforms_LOGO.png" alt="King Uniforms Logo">
+        </div>
+        <h1>Tareas Diarias</h1>
+
+        <div class="area-buttons">
+            <button class="area-button" onclick="selectArea('Mangle 1')">Mangle 1</button>
+            <button class="area-button" onclick="selectArea('Mangle 2')">Mangle 2</button>
+            <button class="area-button" onclick="selectArea('Doblado')">Doblado</button>
+            <button class="area-button" onclick="selectArea('Supervisores')">Supervisores</button>
+            <button class="area-button" onclick="selectArea('Lavanderos')">Lavanderos</button>
+            <button class="area-button" onclick="selectArea('Uniformes')">Uniformes</button>
+            <button class="area-button" onclick="selectArea('Segregado')">Segregado</button>
+            <button class="area-button" onclick="selectArea('Mantenimiento')">Mantenimiento</button>
+        </div>
+
+        <div class="task-list" id="taskList">
+            <div class="no-tasks">Seleccione un área para ver las tareas</div>
+        </div>
+    </div>
+
+    <script>
+        let tasks = [];
+        let completedTasks = new Set();
+        let selectedArea = '';
+        let employees = [];
+
+        // Load employees when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEmployees();
+        });
+
+        function loadEmployees() {
+            db.collection('employees').get()
+                .then(querySnapshot => {
+                    employees = [];
+                    querySnapshot.forEach(doc => {
+                        employees.push(doc.data().name);
+                    });
+                    console.log('Loaded employees:', employees);
+                });
+        }
+
+        function selectArea(area) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.area-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            selectedArea = area;
+            loadTasks();
+        }
+
+        function loadTasks() {
+            if (!selectedArea) return;
+            
+            console.log('Cargando tareas para el área:', selectedArea);
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '<div class="loading">Cargando tareas...</div>';
+
+            db.collection('tasks').get()
+                .then(() => {
+                    console.log('Conexión exitosa a Firebase');
+                    return db.collection('tasks')
+                        .where('area', '==', selectedArea)
+                        .get();
+                })
+                .then(querySnapshot => {
+                    if (querySnapshot.empty) {
+                        console.log('No se encontraron tareas para el área:', selectedArea);
+                        createTestTasks(selectedArea);
+                        return;
+                    }
+
+                    tasks = [];
+                    querySnapshot.forEach(doc => {
+                        const task = doc.data();
+                        task.id = doc.id;
+                        tasks.push(task);
+                        console.log('Tarea cargada:', task);
+                    });
+                    console.log('Total de tareas cargadas:', tasks.length);
+                    return loadTaskAssignments();
+                })
+                .then(() => {
+                    displayTasks();
+                })
+                .catch(error => {
+                    console.error('Error al cargar tareas:', error);
+                    let errorMessage = 'Error al cargar tareas. ';
+                    
+                    if (error.code === 'permission-denied') {
+                        errorMessage += 'Por favor verifique los permisos de Firebase.';
+                    } else if (error.code === 'unavailable') {
+                        errorMessage += 'No se puede conectar a la base de datos. Por favor verifique su conexión a internet.';
+                    } else {
+                        errorMessage += 'Por favor intente nuevamente más tarde.';
+                    }
+                    
+                    taskList.innerHTML = `<div class="no-tasks" style="color: red;">${errorMessage}</div>`;
+                });
+        }
+
+        function createTestTasks(area) {
+            console.log('Creating test tasks for area:', area);
+            
+            // Define tasks based on the area
+            let testTasks = [];
+            
+            switch(area) {
+                case 'Mangle 1':
+                case 'Mangle 2':
+                    testTasks = [
+                        {
+                            name: 'Limpieza de mangle',
+                            area: area,
+                            frequency: 'Diario',
+                            priority: 1
+                        },
+                        {
+                            name: 'Revisión de presión',
+                            area: area,
+                            frequency: 'Diario',
+                            priority: 2
+                        },
+                        {
+                            name: 'Lubricación de partes móviles',
+                            area: area,
+                            frequency: 'Semanal',
+                            priority: 2
+                        },
+                        {
+                            name: 'Mantenimiento preventivo',
+                            area: area,
+                            frequency: 'Mensual',
+                            priority: 3
+                        }
+                    ];
+                    break;
+                    
+                case 'Doblado':
+                    testTasks = [
+                        {
+                            name: 'Limpieza de área',
+                            area: area,
+                            frequency: 'Diario',
+                            priority: 1
+                        },
+                        {
+                            name: 'Revisión de mesas',
+                            area: area,
+                            frequency: 'Diario',
+                            priority: 2
+                        },
+                        {
+                            name: 'Organización de racks',
+                            area: area,
+                            frequency: 'Semanal',
+                            priority: 2
+                        }
+                    ];
+                    break;
+                    
+                case 'Supervisores':
+                    testTasks = [
+                        {
+                            name: 'Revisión de producción',
+                            area: area,
+                            frequency: 'Diario',
+                            priority: 1
+                        },
+                        {
+                            name: 'Reunión de equipo',
+                            area: area,
+                            frequency: 'Semanal',
+                            priority: 2
+                        },
+                        {
+                            name: 'Reporte de productividad',
+                            area: area,
+                            frequency: 'Mensual',
+                            priority: 3
+                        }
+                    ];
+                    break;
+                    
+                case 'Lavanderos':
+                    testTasks = [
+                        {
+                            name: 'Limpieza de lavadoras',
+                            area: area,
+                            frequency: 'Diario',
+                            priority: 1
+                        },
+                        {
+                            name: 'Revisión de químicos',
+                            area: area,
+                            frequency: 'Diario',
+                            priority: 2
+                        },
+                        {
+                            name: 'Mantenimiento de equipos',
+                            area: area,
+                            frequency: 'Semanal',
+                            priority: 2
+                        }
+                    ];
+                    break;
+                    
+                case 'Uniformes':
+                    testTasks = [
+                        {
+                            name: 'Limpieza de área',
+                            area: area,
+                            frequency: 'Diario',
+                            priority: 1
+                        },
+                        {
+                            name: 'Revisión de inventario',
+                            area: area,
+                            frequency: 'Semanal',
+                            priority: 2
+                        },
+                        {
+                            name: 'Organización de racks',
+                            area: area,
+                            frequency: 'Diario',
+                            priority: 2
+                        }
+                    ];
+                    break;
+                    
+                case 'Segregado':
+                    testTasks = [
+                        {
+                            name: 'Limpieza de área',
+                            area: area,
+                            frequency: 'Diario',
+                            priority: 1
+                        },
+                        {
+                            name: 'Revisión de clasificación',
+                            area: area,
+                            frequency: 'Diario',
+                            priority: 2
+                        },
+                        {
+                            name: 'Organización de contenedores',
+                            area: area,
+                            frequency: 'Semanal',
+                            priority: 2
+                        }
+                    ];
+                    break;
+                    
+                case 'Mantenimiento':
+                    testTasks = [
+                        {
+                            name: 'Revisión general de equipos',
+                            area: area,
+                            frequency: 'Diario',
+                            priority: 1
+                        },
+                        {
+                            name: 'Lubricación de maquinaria',
+                            area: area,
+                            frequency: 'Semanal',
+                            priority: 2
+                        },
+                        {
+                            name: 'Mantenimiento preventivo',
+                            area: area,
+                            frequency: 'Mensual',
+                            priority: 3
+                        }
+                    ];
+                    break;
+                    
+                default:
+                    testTasks = [
+                        {
+                            name: 'Limpieza de área',
+                            area: area,
+                            frequency: 'Diario',
+                            priority: 1
+                        },
+                        {
+                            name: 'Revisión de equipos',
+                            area: area,
+                            frequency: 'Semanal',
+                            priority: 2
+                        },
+                        {
+                            name: 'Mantenimiento preventivo',
+                            area: area,
+                            frequency: 'Mensual',
+                            priority: 3
+                        }
+                    ];
+            }
+
+            const batch = db.batch();
+            testTasks.forEach(task => {
+                const docRef = db.collection('tasks').doc();
+                batch.set(docRef, task);
+            });
+
+            batch.commit()
+                .then(() => {
+                    console.log('Test tasks created successfully for area:', area);
+                    loadTasks(); // Reload tasks after creating test tasks
+                })
+                .catch(error => {
+                    console.error('Error creating test tasks:', error);
+                });
+        }
+
+        function loadTaskAssignments() {
+            const now = new Date();
+            const today = new Date(now.setHours(0, 0, 0, 0));
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            return db.collection('taskCompletions')
+                .where('area', '==', selectedArea)
+                .where('completedAt', '>=', today)
+                .where('completedAt', '<', tomorrow)
+                .get()
+                .then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        const data = doc.data();
+                        if (data.assignedTo) {
+                            const taskElement = document.querySelector(`#task-${data.taskId}`);
+                            if (taskElement) {
+                                const select = taskElement.closest('.task-item').querySelector('.employee-select');
+                                if (select) {
+                                    select.value = data.assignedTo;
+                                }
+                            }
+                        }
+                    });
+                });
+        }
+
+        function displayTasks() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+
+            if (tasks.length === 0) {
+                taskList.innerHTML = '<div class="no-tasks">No se encontraron tareas para esta área</div>';
+                console.log('No hay tareas para mostrar');
+                return;
+            }
+
+            console.log('Mostrando tareas para hoy');
+            tasks.forEach(task => {
+                const shouldShow = shouldShowTaskToday(task);
+                console.log('Tarea:', task.name, 'Mostrar hoy:', shouldShow);
+                
+                if (!shouldShow) return;
+
+                const isCompleted = completedTasks.has(task.id);
+                const taskElement = document.createElement('div');
+                taskElement.className = `task-item ${isCompleted ? 'task-completed' : ''}`;
+                
+                let employeeOptions = '<option value="">Seleccionar empleado</option>';
+                employees.forEach(employee => {
+                    employeeOptions += `<option value="${employee}">${employee}</option>`;
+                });
+                
+                taskElement.innerHTML = `
+                    <div class="checkbox-container">
+                        <input type="checkbox" 
+                               id="task-${task.id}" 
+                               ${isCompleted ? 'checked' : ''}
+                               onchange="toggleTaskCompletion('${task.id}')">
+                    </div>
+                    <div class="task-info">
+                        <div><strong>${task.name}</strong></div>
+                        <div><strong>Frecuencia:</strong> ${task.frequency}</div>
+                        <div>
+                            <strong>Asignado a:</strong>
+                            <select class="employee-select" onchange="assignEmployee('${task.id}', this.value)">
+                                ${employeeOptions}
+                            </select>
+                        </div>
+                        <div class="comment-section">
+                            <input type="text" 
+                                   class="comment-input" 
+                                   placeholder="Agregar comentario..."
+                                   onchange="updateTaskComment('${task.id}', this.value)">
+                        </div>
+                    </div>
+                `;
+                taskList.appendChild(taskElement);
+            });
+        }
+
+        function toggleTaskCompletion(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            const isCompleted = completedTasks.has(taskId);
+            const now = new Date();
+
+            if (isCompleted) {
+                // Remove from completed tasks
+                completedTasks.delete(taskId);
+                
+                // Delete completion record
+                db.collection('taskCompletions')
+                    .where('taskId', '==', taskId)
+                    .where('completedAt', '>=', new Date(now.setHours(0, 0, 0, 0)))
+                    .get()
+                    .then(querySnapshot => {
+                        querySnapshot.forEach(doc => {
+                            doc.ref.delete();
+                        });
+                    });
+            } else {
+                // Add to completed tasks
+                completedTasks.add(taskId);
+                
+                // Add completion record
+                db.collection('taskCompletions').add({
+                    taskId,
+                    area: task.area,
+                    completedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    comment: ''
+                });
+            }
+
+            displayTasks();
+        }
+
+        function updateTaskComment(taskId, comment) {
+            const now = new Date();
+            const today = new Date(now.setHours(0, 0, 0, 0));
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            db.collection('taskCompletions')
+                .where('taskId', '==', taskId)
+                .where('completedAt', '>=', today)
+                .where('completedAt', '<', tomorrow)
+                .get()
+                .then(querySnapshot => {
+                    if (!querySnapshot.empty) {
+                        querySnapshot.forEach(doc => {
+                            doc.ref.update({
+                                comment: comment
+                            });
+                        });
+                    }
+                });
+        }
+
+        function assignEmployee(taskId, employeeName) {
+            const now = new Date();
+            const today = new Date(now.setHours(0, 0, 0, 0));
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            db.collection('taskCompletions')
+                .where('taskId', '==', taskId)
+                .where('completedAt', '>=', today)
+                .where('completedAt', '<', tomorrow)
+                .get()
+                .then(querySnapshot => {
+                    if (!querySnapshot.empty) {
+                        querySnapshot.forEach(doc => {
+                            doc.ref.update({
+                                assignedTo: employeeName
+                            });
+                        });
+                    } else {
+                        // Create new completion record with assignment
+                        db.collection('taskCompletions').add({
+                            taskId,
+                            area: selectedArea,
+                            assignedTo: employeeName,
+                            completedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            comment: ''
+                        });
+                    }
+                });
+        }
+
+        // Check for 11 PM to reset tasks
+        function checkForReset() {
+            const now = new Date();
+            if (now.getHours() === 23 && now.getMinutes() === 0) {
+                // Archive today's completions
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                db.collection('taskCompletions')
+                    .where('completedAt', '>=', today)
+                    .get()
+                    .then(querySnapshot => {
+                        const batch = db.batch();
+                        querySnapshot.forEach(doc => {
+                            const data = doc.data();
+                            // Add to archive
+                            db.collection('taskArchive').add({
+                                ...data,
+                                archivedAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            // Delete from current completions
+                            batch.delete(doc.ref);
+                        });
+                        return batch.commit();
+                    })
+                    .then(() => {
+                        completedTasks.clear();
+                        displayTasks();
+                    });
+            }
+        }
+
+        // Function to check if a task should be shown today based on its frequency
+        function shouldShowTaskToday(task) {
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            const dayOfMonth = today.getDate();
+            const month = today.getMonth();
+
+            switch(task.frequency) {
+                case 'Diario':
+                    return true;
+                case 'Dos Veces en Semana':
+                    // Show on Monday and Thursday (1 and 4)
+                    return dayOfWeek === 1 || dayOfWeek === 4;
+                case 'Semanal':
+                    // Show on Monday
+                    return dayOfWeek === 1;
+                case 'Dos Veces al Mes':
+                    // Show on 1st and 15th
+                    return dayOfMonth === 1 || dayOfMonth === 15;
+                case 'Mensual':
+                    // Show on 1st of each month
+                    return dayOfMonth === 1;
+                case 'Cada Dos Meses':
+                    // Show on 1st of even months (0, 2, 4, 6, 8, 10)
+                    return dayOfMonth === 1 && month % 2 === 0;
+                default:
+                    return false;
+            }
+        }
+
+        // Check every minute
+        setInterval(checkForReset, 60000);
+    </script>
+</body>
+</html> 

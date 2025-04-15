@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>King Uniforms - Driver Entry Form</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Initialize Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDEIvgnnOmz1dkxvMRzaK1JzIf5H_L5JE",
+            authDomain: "king-uniforms-drivers.firebaseapp.com",
+            projectId: "king-uniforms-drivers",
+            storageBucket: "king-uniforms-drivers.firebasestorage.app",
+            messagingSenderId: "543363951334",
+            appId: "1:543363951334:web:7300f1dc4b2b9a47f12927",
+            measurementId: "G-NW0DZ41JXD"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+    
+    <style>
+        :root {
+            --king-red: #E31837;
+            --king-blue: #003B71;
+            --king-yellow: #FFB81C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo-container img {
+            max-width: 300px;
+            height: auto;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            border-top: 5px solid var(--king-blue);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--king-blue);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--king-blue);
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--king-blue);
+            box-shadow: 0 0 0 3px rgba(0, 59, 113, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23003B71' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: #ddd;
+            border: none;
+            border-radius: 4px;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background-color: var(--king-blue);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background-color: var(--king-blue);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background-color: var(--king-red);
+            transform: scale(1.1);
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            background-color: var(--king-red);
+            transform: scale(1.1);
+        }
+
+        .slider-value {
+            text-align: center;
+            color: var(--king-blue);
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--king-red);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background-color: #c41230;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(227, 24, 55, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            color: var(--king-blue);
+            margin-top: 1rem;
+            font-weight: 500;
+            padding: 1rem;
+            background-color: rgba(0, 59, 113, 0.1);
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="logo-container">
+            <img src="King_Uniforms_LOGO.png" alt="King Uniforms Logo">
+        </div>
+        <h1>Driver Entry Form</h1>
+        <form id="driverForm">
+            <div class="form-group">
+                <label for="driverName">Driver's Name</label>
+                <select id="driverName" name="driverName" required>
+                    <option value="">Select a Driver</option>
+                    <option value="Alejandro Estrada">Alejandro Estrada</option>
+                    <option value="Arnaldo Fernandez">Arnaldo Fernandez</option>
+                    <option value="Ferdinan Reyes">Ferdinan Reyes</option>
+                    <option value="Israel Perez">Israel Perez</option>
+                    <option value="Javier Velez">Javier Velez</option>
+                    <option value="Jonny Ramos">Jonny Ramos</option>
+                    <option value="Jose I. Lopez">Jose I. Lopez</option>
+                    <option value="Juan Perez">Juan Perez</option>
+                    <option value="Luis A. Feliciano">Luis A. Feliciano</option>
+                    <option value="Marvin E. Archilla">Marvin E. Archilla</option>
+                    <option value="Misael F. Gonzalez">Misael F. Gonzalez</option>
+                    <option value="Oscar Gonzalez">Oscar Gonzalez</option>
+                    <option value="William Portalatin">William Portalatin</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="clientName">Client Name</label>
+                <select id="clientName" name="clientName" required>
+                    <option value="">Select a Client</option>
+                    <option value="Active Machine">Active Machine</option>
+                    <option value="Alfombras">Alfombras</option>
+                    <option value="Aloft">Aloft</option>
+                    <option value="Antiguo Casino">Antiguo Casino</option>
+                    <option value="Barlovento">Barlovento</option>
+                    <option value="Bayamon Medical Center">Bayamon Medical Center</option>
+                    <option value="Bayamon Regional">Bayamon Regional</option>
+                    <option value="Biocann Arecibo">Biocann Arecibo</option>
+                    <option value="Buen Samaritano">Buen Samaritano</option>
+                    <option value="Camara Hiperbarica Arecibo">Camara Hiperbarica Arecibo</option>
+                    <option value="Camuy Health Services">Camuy Health Services</option>
+                    <option value="Cardiovascular">Cardiovascular</option>
+                    <option value="CDT">CDT</option>
+                    <option value="Cementerio Bayamon">Cementerio Bayamon</option>
+                    <option value="Cementerio Morovis">Cementerio Morovis</option>
+                    <option value="Centro de Convenciones Manteles">Centro de Convenciones Manteles</option>
+                    <option value="Centro de Convenciones Servilletas">Centro de Convenciones Servilletas</option>
+                    <option value="Centro Medico">Centro Medico</option>
+                    <option value="Che Racing">Che Racing</option>
+                    <option value="Children's Hospital">Children's Hospital</option>
+                    <option value="Clorox">Clorox</option>
+                    <option value="Colinas">Colinas</option>
+                    <option value="Costa Bahia">Costa Bahia</option>
+                    <option value="Doctor Center Bayamon">Doctor Center Bayamon</option>
+                    <option value="Doctor Center Carolina">Doctor Center Carolina</option>
+                    <option value="Doctor Center Manati">Doctor Center Manati</option>
+                    <option value="Doctor Center San Juan">Doctor Center San Juan</option>
+                    <option value="Dorado Aquarius">Dorado Aquarius</option>
+                    <option value="Dr. Pila">Dr. Pila</option>
+                    <option value="El Buen Cafe">El Buen Cafe</option>
+                    <option value="Emprosur">Emprosur</option>
+                    <option value="Encanto">Encanto</option>
+                    <option value="Flor 1">Flor 1</option>
+                    <option value="Flor 2">Flor 2</option>
+                    <option value="Garaje Molina">Garaje Molina</option>
+                    <option value="Hospital Metropolitano Utuado">Hospital Metropolitano Utuado</option>
+                    <option value="Hyatt">Hyatt</option>
+                    <option value="Il Baccalao">Il Baccalao</option>
+                    <option value="IPR">IPR</option>
+                    <option value="J&J Añasco">J&J Añasco</option>
+                    <option value="J&J Guaynabo">J&J Guaynabo</option>
+                    <option value="J&J Gurabo">J&J Gurabo</option>
+                    <option value="J&J Las Piedras">J&J Las Piedras</option>
+                    <option value="J&J Manati">J&J Manati</option>
+                    <option value="J&J San Lorenzo">J&J San Lorenzo</option>
+                    <option value="JLL Humacao">JLL Humacao</option>
+                    <option value="JLL Manati">JLL Manati</option>
+                    <option value="K&K Arecibo">K&K Arecibo</option>
+                    <option value="K&K Camuy">K&K Camuy</option>
+                    <option value="K&K Hatillo">K&K Hatillo</option>
+                    <option value="K&K Quebradillas">K&K Quebradillas</option>
+                    <option value="Lab Clinico Toledo">Lab Clinico Toledo</option>
+                    <option value="Ladrillo">Ladrillo</option>
+                    <option value="Lilly del Caribe">Lilly del Caribe</option>
+                    <option value="Manati Medical">Manati Medical</option>
+                    <option value="Mapei">Mapei</option>
+                    <option value="Marbella">Marbella</option>
+                    <option value="Mayaguez Medical Center">Mayaguez Medical Center</option>
+                    <option value="Melao y Panela">Melao y Panela</option>
+                    <option value="Menonita Aguas Buenas">Menonita CDT Aguas Buenas</option>
+                    <option value="Menonita Caguas">Menonita Caguas</option>
+                    <option value="Menonita Cayey">Menonita Cayey</option>
+                    <option value="Menonita Cidra">Menonita CDT Cidra</option>
+                    <option value="Menonita Comerio">Menonita CDT Comerio</option>
+                    <option value="Menonita Guayama">Menonita Guayama</option>
+                    <option value="Menonita Humacao">Menonita Humacao</option>
+                    <option value="Menonita Ponce">Menonita Ponce</option>
+                    <option value="Merial Barceloneta">Merial Barceloneta</option>
+                    <option value="Norberto Rodriguez">Norberto Rodriguez</option>
+                    <option value="Oftalmologico Arecibo">Oftalmologico Arecibo</option>
+                    <option value="Oncologico">Oncologico</option>
+                    <option value="Pavia Arecibo">Pavia Arecibo</option>
+                    <option value="Pavia Susoni">Pavia Susoni</option>
+                    <option value="Perea Mayaguez">Perea Mayaguez</option>
+                    <option value="Plantation">Plantation</option>
+                    <option value="Professional">Professional</option>
+                    <option value="Provimi Morovis">Provimi Morovis</option>
+                    <option value="Rimco Arecibo">Rimco Arecibo</option>
+                    <option value="Rimco Ponce">Rimco Ponce</option>
+                    <option value="Rimco San Juan">Rimco San Juan</option>
+                    <option value="San Carlos">San Carlos</option>
+                    <option value="San Jorge">San Jorge</option>
+                    <option value="Sheraton Convenciones">Sheraton Convenciones</option>
+                    <option value="Sheraton Convenciones Toallas Piscinas">Sheraton Convenciones Toallas Piscinas</option>
+                    <option value="Thermoking">Thermoking</option>
+                    <option value="UPR Mayaguez">UPR Mayaguez</option>
+                    <option value="Utuado">Utuado</option>
+                    <option value="Veolia Arecibo">Veolia Arecibo</option>
+                    <option value="Veolia Gurabo">Veolia Gurabo</option>
+                    <option value="Viatris Vega Baja">Viatris Vega Baja</option>
+                    <option value="Watermill Dorado Beach">Watermill Dorado Beach</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="carts">Number of Carts</label>
+                <input type="range" id="carts" name="carts" min="1" max="15" value="1" required>
+                <div class="slider-value" id="cartsValue">1 Cart</div>
+            </div>
+            <div class="form-group">
+                <label for="pounds">Quantity of Pounds</label>
+                <input type="number" id="pounds" name="pounds" required>
+            </div>
+            <button type="submit">Submit Entry</button>
+        </form>
+        <div class="success-message" id="successMessage">
+            Entry submitted successfully!
+        </div>
+    </div>
+
+    <script>
+        // Slider functionality
+        const cartsSlider = document.getElementById('carts');
+        const cartsValue = document.getElementById('cartsValue');
+
+        cartsSlider.addEventListener('input', function() {
+            cartsValue.textContent = this.value + (this.value === '1' ? ' Cart' : ' Carts');
+        });
+
+        // Form submission
+        document.getElementById('driverForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                timestamp: firebase.firestore.Timestamp.now(),
+                driverName: document.getElementById('driverName').value,
+                clientName: document.getElementById('clientName').value,
+                pounds: document.getElementById('pounds').value,
+                carts: document.getElementById('carts').value
+            };
+
+            // Save to Firebase
+            db.collection('driverEntries').add(formData)
+                .then(() => {
+                    // Show success message and reset form
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('driverForm').reset();
+                    cartsValue.textContent = '1 Cart';
+                    setTimeout(() => {
+                        document.getElementById('successMessage').style.display = 'none';
+                    }, 3000);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('There was an error submitting the form. Please try again.');
+                });
+        });
+    </script>
+</body>
+</html> 
