@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>King Uniforms - Registro de Libras</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Initialize Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDEIvgnnOmz1dkxvMRzaK1JzIf5H_L5JE",
+            authDomain: "king-uniforms-drivers.firebaseapp.com",
+            projectId: "king-uniforms-drivers",
+            storageBucket: "king-uniforms-drivers.firebasestorage.app",
+            messagingSenderId: "543363951334",
+            appId: "1:543363951334:web:7300f1dc4b2b9a47f12927",
+            measurementId: "G-NW0DZ41JXD"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+    
+    <style>
+        :root {
+            --king-red: #E31837;
+            --king-blue: #003B71;
+            --king-yellow: #FFB81C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo-container img {
+            max-width: 300px;
+            height: auto;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            border-top: 5px solid var(--king-blue);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--king-blue);
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--king-blue);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--king-blue);
+            box-shadow: 0 0 0 3px rgba(0, 59, 113, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23003B71' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 18px;
+            background-color: var(--king-red);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background-color: #c41230;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(227, 24, 55, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            color: var(--king-blue);
+            margin-top: 1rem;
+            font-weight: 500;
+            padding: 1rem;
+            background-color: rgba(0, 59, 113, 0.1);
+            border-radius: 6px;
+            font-size: 1.2rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .nav-buttons button {
+            flex: 1;
+        }
+
+        .back-btn {
+            background-color: var(--king-blue);
+        }
+
+        .back-btn:hover {
+            background-color: #002b54;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="logo-container">
+            <img src="King_Uniforms_LOGO.png" alt="Logo de King Uniforms">
+        </div>
+        <h1>Registro de Libras</h1>
+        <form id="driverForm">
+            <div class="form-group">
+                <label for="driverName">Nombre del Chofer</label>
+                <select id="driverName" name="driverName" required>
+                    <option value="">Seleccione un Chofer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="clientName">Nombre del Cliente</label>
+                <select id="clientName" name="clientName" required>
+                    <option value="">Seleccione un Cliente</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pounds">Cantidad de Libras</label>
+                <input type="number" id="pounds" name="pounds" required>
+            </div>
+            <button type="submit">Enviar Entrada</button>
+        </form>
+        <div class="nav-buttons">
+            <button onclick="window.location.href='index.html'" class="back-btn">Volver al Inicio</button>
+        </div>
+        <div class="success-message" id="successMessage">
+            ¡Entrada enviada exitosamente!
+        </div>
+    </div>
+
+    <script>
+        // Form submission
+        document.getElementById('driverForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                timestamp: firebase.firestore.Timestamp.now(),
+                driverName: document.getElementById('driverName').value,
+                clientName: document.getElementById('clientName').value,
+                pounds: document.getElementById('pounds').value
+            };
+
+            // Save to Firebase
+            db.collection('driverEntries').add(formData)
+                .then(() => {
+                    // Show success message and reset form
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('driverForm').reset();
+                    setTimeout(() => {
+                        document.getElementById('successMessage').style.display = 'none';
+                    }, 3000);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Hubo un error al enviar el formulario. Por favor, inténtelo de nuevo.');
+                });
+        });
+
+        // Load drivers and clients when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDrivers();
+            loadClients();
+        });
+
+        function loadDrivers() {
+            const driverSelect = document.getElementById('driverName');
+            db.collection('lists').doc('drivers').get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const drivers = doc.data().items || [];
+                        drivers.forEach(driver => {
+                            const option = document.createElement('option');
+                            option.value = driver;
+                            option.textContent = driver;
+                            driverSelect.appendChild(option);
+                        });
+                    }
+                });
+        }
+
+        function loadClients() {
+            const clientSelect = document.getElementById('clientName');
+            db.collection('lists').doc('clients').get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const clients = doc.data().items || [];
+                        clients.forEach(client => {
+                            const option = document.createElement('option');
+                            option.value = client;
+                            option.textContent = client;
+                            clientSelect.appendChild(option);
+                        });
+                    }
+                });
+        }
+    </script>
+</body>
+</html> 

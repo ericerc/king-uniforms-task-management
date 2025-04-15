@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>King Uniforms - Daily Tasks</title>
+    <title>King Uniforms - Lista de Mantenimiento</title>
     <!-- Add Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -41,22 +41,18 @@
 
         body {
             background-color: #f5f5f5;
+            min-height: 100vh;
             padding: 20px;
         }
 
         .container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             max-width: 1200px;
-            margin: 20px auto;
-            border-top: 5px solid var(--king-blue);
+            margin: 0 auto;
         }
 
         .logo-container {
             text-align: center;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
         }
 
         .logo-container img {
@@ -64,9 +60,42 @@
             height: auto;
         }
 
-        h1, h2 {
+        h1 {
             text-align: center;
             color: var(--king-blue);
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-buttons button {
+            padding: 12px 24px;
+            background-color: var(--king-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-buttons button:hover {
+            background-color: var(--king-red);
+            transform: translateY(-2px);
+        }
+
+        .task-form {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 2rem;
         }
 
@@ -74,692 +103,350 @@
             margin-bottom: 1.5rem;
         }
 
-        .area-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .area-button {
-            padding: 12px;
-            background-color: white;
-            border: 2px solid var(--king-blue);
-            border-radius: 6px;
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
             color: var(--king-blue);
             font-weight: 600;
-            cursor: pointer;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
             transition: all 0.3s ease;
-            text-align: center;
         }
 
-        .area-button:hover {
-            background-color: var(--king-blue);
-            color: white;
-        }
-
-        .area-button.active {
-            background-color: var(--king-blue);
-            color: white;
-        }
-
-        .area-button:focus {
+        input:focus, select:focus {
             outline: none;
+            border-color: var(--king-blue);
             box-shadow: 0 0 0 3px rgba(0, 59, 113, 0.1);
         }
 
-        .task-list {
-            margin-top: 2rem;
+        .submit-btn {
+            background-color: var(--king-red);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #c41230;
+            transform: translateY(-2px);
+        }
+
+        .tasks-list {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .task-item {
-            background-color: #f9f9f9;
-            padding: 1rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .task-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-        }
-
-        .employee-select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: white;
-            color: var(--king-blue);
-            font-size: 14px;
-            margin-top: 0.5rem;
-        }
-
-        .employee-select:focus {
-            outline: none;
-            border-color: var(--king-blue);
-        }
-
-        .task-completed {
-            opacity: 0.6;
-            text-decoration: line-through;
-        }
-
-        .checkbox-container {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 0.5rem;
         }
 
-        .checkbox-container input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
+        .task-item:last-child {
+            border-bottom: none;
         }
 
-        .comment-input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
+        .task-info h3 {
+            color: var(--king-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .task-info p {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .task-actions button {
+            padding: 8px 16px;
+            border: none;
             border-radius: 4px;
-            margin-top: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .comment-input:focus {
-            outline: none;
-            border-color: var(--king-blue);
-        }
-
-        .loading {
-            text-align: center;
-            margin: 20px 0;
+        .edit-btn {
+            background-color: var(--king-yellow);
             color: var(--king-blue);
         }
 
-        .no-tasks {
-            text-align: center;
+        .delete-btn {
+            background-color: var(--king-red);
+            color: white;
+        }
+
+        .task-actions button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
             padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
             color: var(--king-blue);
-            font-style: italic;
         }
-
-        .priority-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 5px;
-        }
-
-        .priority-1 { background-color: #28a745; }
-        .priority-2 { background-color: #17a2b8; }
-        .priority-3 { background-color: #ffc107; }
-        .priority-4 { background-color: #fd7e14; }
-        .priority-5 { background-color: #dc3545; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo-container">
-            <img src="King_Uniforms_LOGO.png" alt="King Uniforms Logo">
+            <img src="King_Uniforms_LOGO.png" alt="Logo de King Uniforms">
         </div>
-        <h1>Tareas Diarias</h1>
+        <h1>Lista de Mantenimiento</h1>
 
-        <div class="area-buttons">
-            <button class="area-button" onclick="selectArea('Mangle 1')">Mangle 1</button>
-            <button class="area-button" onclick="selectArea('Mangle 2')">Mangle 2</button>
-            <button class="area-button" onclick="selectArea('Doblado')">Doblado</button>
-            <button class="area-button" onclick="selectArea('Supervisores')">Supervisores</button>
-            <button class="area-button" onclick="selectArea('Lavanderos')">Lavanderos</button>
-            <button class="area-button" onclick="selectArea('Uniformes')">Uniformes</button>
-            <button class="area-button" onclick="selectArea('Segregado')">Segregado</button>
-            <button class="area-button" onclick="selectArea('Mantenimiento')">Mantenimiento</button>
+        <div class="nav-buttons">
+            <button onclick="window.location.href='index.html'">Volver al Inicio</button>
         </div>
 
-        <div class="task-list" id="taskList">
-            <div class="no-tasks">Seleccione un área para ver las tareas</div>
+        <div class="task-form">
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="taskTitle">Título de la Tarea</label>
+                    <input type="text" id="taskTitle" name="taskTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskArea">Área</label>
+                    <select id="taskArea" name="taskArea" required>
+                        <option value="">Seleccione un área</option>
+                        <option value="Mangle 1">Mangle 1</option>
+                        <option value="Mangle 2">Mangle 2</option>
+                        <option value="Doblado">Doblado</option>
+                        <option value="Supervisores">Supervisores</option>
+                        <option value="Lavanderos">Lavanderos</option>
+                        <option value="Uniformes">Uniformes</option>
+                        <option value="Segregado">Segregado</option>
+                        <option value="Mantenimiento">Mantenimiento</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="taskFrequency">Frecuencia</label>
+                    <select id="taskFrequency" name="taskFrequency" required>
+                        <option value="">Seleccione la frecuencia</option>
+                        <option value="Diario">Diario</option>
+                        <option value="Dos Veces en Semana">Dos Veces en Semana</option>
+                        <option value="Semanal">Semanal</option>
+                        <option value="Dos Veces al Mes">Dos Veces al Mes</option>
+                        <option value="Mensual">Mensual</option>
+                        <option value="Cada Dos Meses">Cada Dos Meses</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">Agregar Tarea</button>
+            </form>
+        </div>
+
+        <div class="tasks-list" id="tasksList">
+            <!-- Tasks will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Modal for editing tasks -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeEditModal()">&times;</span>
+            <h2>Editar Tarea</h2>
+            <form id="editTaskForm">
+                <input type="hidden" id="editTaskId">
+                <div class="form-group">
+                    <label for="editTaskTitle">Título de la Tarea</label>
+                    <input type="text" id="editTaskTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTaskArea">Área</label>
+                    <select id="editTaskArea" required>
+                        <option value="">Seleccione un área</option>
+                        <option value="Mangle 1">Mangle 1</option>
+                        <option value="Mangle 2">Mangle 2</option>
+                        <option value="Doblado">Doblado</option>
+                        <option value="Supervisores">Supervisores</option>
+                        <option value="Lavanderos">Lavanderos</option>
+                        <option value="Uniformes">Uniformes</option>
+                        <option value="Segregado">Segregado</option>
+                        <option value="Mantenimiento">Mantenimiento</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editTaskFrequency">Frecuencia</label>
+                    <select id="editTaskFrequency" required>
+                        <option value="">Seleccione la frecuencia</option>
+                        <option value="Diario">Diario</option>
+                        <option value="Dos Veces en Semana">Dos Veces en Semana</option>
+                        <option value="Semanal">Semanal</option>
+                        <option value="Dos Veces al Mes">Dos Veces al Mes</option>
+                        <option value="Mensual">Mensual</option>
+                        <option value="Cada Dos Meses">Cada Dos Meses</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">Guardar Cambios</button>
+            </form>
         </div>
     </div>
 
     <script>
-        let tasks = [];
-        let completedTasks = new Set();
-        let selectedArea = '';
-        let employees = [];
+        // Form submission
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const taskData = {
+                title: document.getElementById('taskTitle').value,
+                area: document.getElementById('taskArea').value,
+                frequency: document.getElementById('taskFrequency').value,
+                createdAt: firebase.firestore.Timestamp.now()
+            };
 
-        // Load employees when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            loadEmployees();
+            // Save to Firebase
+            db.collection('maintenanceTasks').add(taskData)
+                .then(() => {
+                    document.getElementById('taskForm').reset();
+                    loadTasks();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Hubo un error al guardar la tarea. Por favor, inténtelo de nuevo.');
+                });
         });
 
-        function loadEmployees() {
-            db.collection('employees').get()
-                .then(querySnapshot => {
-                    employees = [];
-                    querySnapshot.forEach(doc => {
-                        employees.push(doc.data().name);
-                    });
-                    console.log('Loaded employees:', employees);
-                });
-        }
-
-        function selectArea(area) {
-            // Remove active class from all buttons
-            document.querySelectorAll('.area-button').forEach(button => {
-                button.classList.remove('active');
-            });
-            
-            // Add active class to clicked button
-            event.target.classList.add('active');
-            
-            selectedArea = area;
-            loadTasks();
-        }
+        // Load tasks when the page loads
+        document.addEventListener('DOMContentLoaded', loadTasks);
 
         function loadTasks() {
-            if (!selectedArea) return;
-            
-            console.log('Cargando tareas para el área:', selectedArea);
-            const taskList = document.getElementById('taskList');
-            taskList.innerHTML = '<div class="loading">Cargando tareas...</div>';
+            const tasksList = document.getElementById('tasksList');
+            tasksList.innerHTML = '';
 
-            db.collection('tasks').get()
-                .then(() => {
-                    console.log('Conexión exitosa a Firebase');
-                    return db.collection('tasks')
-                        .where('area', '==', selectedArea)
-                        .get();
-                })
+            db.collection('maintenanceTasks')
+                .orderBy('createdAt', 'desc')
+                .get()
                 .then(querySnapshot => {
                     if (querySnapshot.empty) {
-                        console.log('No se encontraron tareas para el área:', selectedArea);
-                        createTestTasks(selectedArea);
+                        tasksList.innerHTML = '<p style="text-align: center; color: #666;">No hay tareas registradas</p>';
                         return;
                     }
 
-                    tasks = [];
                     querySnapshot.forEach(doc => {
                         const task = doc.data();
-                        task.id = doc.id;
-                        tasks.push(task);
-                        console.log('Tarea cargada:', task);
+                        const taskElement = createTaskElement(doc.id, task);
+                        tasksList.appendChild(taskElement);
                     });
-                    console.log('Total de tareas cargadas:', tasks.length);
-                    return loadTaskAssignments();
-                })
-                .then(() => {
-                    displayTasks();
-                })
-                .catch(error => {
-                    console.error('Error al cargar tareas:', error);
-                    let errorMessage = 'Error al cargar tareas. ';
-                    
-                    if (error.code === 'permission-denied') {
-                        errorMessage += 'Por favor verifique los permisos de Firebase.';
-                    } else if (error.code === 'unavailable') {
-                        errorMessage += 'No se puede conectar a la base de datos. Por favor verifique su conexión a internet.';
-                    } else {
-                        errorMessage += 'Por favor intente nuevamente más tarde.';
-                    }
-                    
-                    taskList.innerHTML = `<div class="no-tasks" style="color: red;">${errorMessage}</div>`;
                 });
         }
 
-        function createTestTasks(area) {
-            console.log('Creating test tasks for area:', area);
+        function createTaskElement(taskId, task) {
+            const taskElement = document.createElement('div');
+            taskElement.className = 'task-item';
             
-            // Define tasks based on the area
-            let testTasks = [];
-            
-            switch(area) {
-                case 'Mangle 1':
-                case 'Mangle 2':
-                    testTasks = [
-                        {
-                            name: 'Limpieza de mangle',
-                            area: area,
-                            frequency: 'Diario',
-                            priority: 1
-                        },
-                        {
-                            name: 'Revisión de presión',
-                            area: area,
-                            frequency: 'Diario',
-                            priority: 2
-                        },
-                        {
-                            name: 'Lubricación de partes móviles',
-                            area: area,
-                            frequency: 'Semanal',
-                            priority: 2
-                        },
-                        {
-                            name: 'Mantenimiento preventivo',
-                            area: area,
-                            frequency: 'Mensual',
-                            priority: 3
-                        }
-                    ];
-                    break;
-                    
-                case 'Doblado':
-                    testTasks = [
-                        {
-                            name: 'Limpieza de área',
-                            area: area,
-                            frequency: 'Diario',
-                            priority: 1
-                        },
-                        {
-                            name: 'Revisión de mesas',
-                            area: area,
-                            frequency: 'Diario',
-                            priority: 2
-                        },
-                        {
-                            name: 'Organización de racks',
-                            area: area,
-                            frequency: 'Semanal',
-                            priority: 2
-                        }
-                    ];
-                    break;
-                    
-                case 'Supervisores':
-                    testTasks = [
-                        {
-                            name: 'Revisión de producción',
-                            area: area,
-                            frequency: 'Diario',
-                            priority: 1
-                        },
-                        {
-                            name: 'Reunión de equipo',
-                            area: area,
-                            frequency: 'Semanal',
-                            priority: 2
-                        },
-                        {
-                            name: 'Reporte de productividad',
-                            area: area,
-                            frequency: 'Mensual',
-                            priority: 3
-                        }
-                    ];
-                    break;
-                    
-                case 'Lavanderos':
-                    testTasks = [
-                        {
-                            name: 'Limpieza de lavadoras',
-                            area: area,
-                            frequency: 'Diario',
-                            priority: 1
-                        },
-                        {
-                            name: 'Revisión de químicos',
-                            area: area,
-                            frequency: 'Diario',
-                            priority: 2
-                        },
-                        {
-                            name: 'Mantenimiento de equipos',
-                            area: area,
-                            frequency: 'Semanal',
-                            priority: 2
-                        }
-                    ];
-                    break;
-                    
-                case 'Uniformes':
-                    testTasks = [
-                        {
-                            name: 'Limpieza de área',
-                            area: area,
-                            frequency: 'Diario',
-                            priority: 1
-                        },
-                        {
-                            name: 'Revisión de inventario',
-                            area: area,
-                            frequency: 'Semanal',
-                            priority: 2
-                        },
-                        {
-                            name: 'Organización de racks',
-                            area: area,
-                            frequency: 'Diario',
-                            priority: 2
-                        }
-                    ];
-                    break;
-                    
-                case 'Segregado':
-                    testTasks = [
-                        {
-                            name: 'Limpieza de área',
-                            area: area,
-                            frequency: 'Diario',
-                            priority: 1
-                        },
-                        {
-                            name: 'Revisión de clasificación',
-                            area: area,
-                            frequency: 'Diario',
-                            priority: 2
-                        },
-                        {
-                            name: 'Organización de contenedores',
-                            area: area,
-                            frequency: 'Semanal',
-                            priority: 2
-                        }
-                    ];
-                    break;
-                    
-                case 'Mantenimiento':
-                    testTasks = [
-                        {
-                            name: 'Revisión general de equipos',
-                            area: area,
-                            frequency: 'Diario',
-                            priority: 1
-                        },
-                        {
-                            name: 'Lubricación de maquinaria',
-                            area: area,
-                            frequency: 'Semanal',
-                            priority: 2
-                        },
-                        {
-                            name: 'Mantenimiento preventivo',
-                            area: area,
-                            frequency: 'Mensual',
-                            priority: 3
-                        }
-                    ];
-                    break;
-                    
-                default:
-                    testTasks = [
-                        {
-                            name: 'Limpieza de área',
-                            area: area,
-                            frequency: 'Diario',
-                            priority: 1
-                        },
-                        {
-                            name: 'Revisión de equipos',
-                            area: area,
-                            frequency: 'Semanal',
-                            priority: 2
-                        },
-                        {
-                            name: 'Mantenimiento preventivo',
-                            area: area,
-                            frequency: 'Mensual',
-                            priority: 3
-                        }
-                    ];
-            }
+            taskElement.innerHTML = `
+                <div class="task-info">
+                    <h3>${task.title}</h3>
+                    <p><strong>Área:</strong> ${task.area}</p>
+                    <p><strong>Frecuencia:</strong> ${task.frequency}</p>
+                </div>
+                <div class="task-actions">
+                    <button class="edit-btn" onclick="openEditModal('${taskId}', '${task.title}', '${task.area}', '${task.frequency}')">Editar</button>
+                    <button class="delete-btn" onclick="deleteTask('${taskId}')">Eliminar</button>
+                </div>
+            `;
 
-            const batch = db.batch();
-            testTasks.forEach(task => {
-                const docRef = db.collection('tasks').doc();
-                batch.set(docRef, task);
-            });
-
-            batch.commit()
-                .then(() => {
-                    console.log('Test tasks created successfully for area:', area);
-                    loadTasks(); // Reload tasks after creating test tasks
-                })
-                .catch(error => {
-                    console.error('Error creating test tasks:', error);
-                });
+            return taskElement;
         }
 
-        function loadTaskAssignments() {
-            const now = new Date();
-            const today = new Date(now.setHours(0, 0, 0, 0));
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-
-            return db.collection('taskCompletions')
-                .where('area', '==', selectedArea)
-                .where('completedAt', '>=', today)
-                .where('completedAt', '<', tomorrow)
-                .get()
-                .then(querySnapshot => {
-                    querySnapshot.forEach(doc => {
-                        const data = doc.data();
-                        if (data.assignedTo) {
-                            const taskElement = document.querySelector(`#task-${data.taskId}`);
-                            if (taskElement) {
-                                const select = taskElement.closest('.task-item').querySelector('.employee-select');
-                                if (select) {
-                                    select.value = data.assignedTo;
-                                }
-                            }
-                        }
-                    });
-                });
-        }
-
-        function displayTasks() {
-            const taskList = document.getElementById('taskList');
-            taskList.innerHTML = '';
-
-            if (tasks.length === 0) {
-                taskList.innerHTML = '<div class="no-tasks">No se encontraron tareas para esta área</div>';
-                console.log('No hay tareas para mostrar');
-                return;
-            }
-
-            console.log('Mostrando tareas para hoy');
-            tasks.forEach(task => {
-                const shouldShow = shouldShowTaskToday(task);
-                console.log('Tarea:', task.name, 'Mostrar hoy:', shouldShow);
-                
-                if (!shouldShow) return;
-
-                const isCompleted = completedTasks.has(task.id);
-                const taskElement = document.createElement('div');
-                taskElement.className = `task-item ${isCompleted ? 'task-completed' : ''}`;
-                
-                let employeeOptions = '<option value="">Seleccionar empleado</option>';
-                employees.forEach(employee => {
-                    employeeOptions += `<option value="${employee}">${employee}</option>`;
-                });
-                
-                taskElement.innerHTML = `
-                    <div class="checkbox-container">
-                        <input type="checkbox" 
-                               id="task-${task.id}" 
-                               ${isCompleted ? 'checked' : ''}
-                               onchange="toggleTaskCompletion('${task.id}')">
-                    </div>
-                    <div class="task-info">
-                        <div><strong>${task.name}</strong></div>
-                        <div><strong>Frecuencia:</strong> ${task.frequency}</div>
-                        <div>
-                            <strong>Asignado a:</strong>
-                            <select class="employee-select" onchange="assignEmployee('${task.id}', this.value)">
-                                ${employeeOptions}
-                            </select>
-                        </div>
-                        <div class="comment-section">
-                            <input type="text" 
-                                   class="comment-input" 
-                                   placeholder="Agregar comentario..."
-                                   onchange="updateTaskComment('${task.id}', this.value)">
-                        </div>
-                    </div>
-                `;
-                taskList.appendChild(taskElement);
-            });
-        }
-
-        function toggleTaskCompletion(taskId) {
-            const task = tasks.find(t => t.id === taskId);
-            if (!task) return;
-
-            const isCompleted = completedTasks.has(taskId);
-            const now = new Date();
-
-            if (isCompleted) {
-                // Remove from completed tasks
-                completedTasks.delete(taskId);
-                
-                // Delete completion record
-                db.collection('taskCompletions')
-                    .where('taskId', '==', taskId)
-                    .where('completedAt', '>=', new Date(now.setHours(0, 0, 0, 0)))
-                    .get()
-                    .then(querySnapshot => {
-                        querySnapshot.forEach(doc => {
-                            doc.ref.delete();
-                        });
-                    });
-            } else {
-                // Add to completed tasks
-                completedTasks.add(taskId);
-                
-                // Add completion record
-                db.collection('taskCompletions').add({
-                    taskId,
-                    area: task.area,
-                    completedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    comment: ''
-                });
-            }
-
-            displayTasks();
-        }
-
-        function updateTaskComment(taskId, comment) {
-            const now = new Date();
-            const today = new Date(now.setHours(0, 0, 0, 0));
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-
-            db.collection('taskCompletions')
-                .where('taskId', '==', taskId)
-                .where('completedAt', '>=', today)
-                .where('completedAt', '<', tomorrow)
-                .get()
-                .then(querySnapshot => {
-                    if (!querySnapshot.empty) {
-                        querySnapshot.forEach(doc => {
-                            doc.ref.update({
-                                comment: comment
-                            });
-                        });
-                    }
-                });
-        }
-
-        function assignEmployee(taskId, employeeName) {
-            const now = new Date();
-            const today = new Date(now.setHours(0, 0, 0, 0));
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-
-            db.collection('taskCompletions')
-                .where('taskId', '==', taskId)
-                .where('completedAt', '>=', today)
-                .where('completedAt', '<', tomorrow)
-                .get()
-                .then(querySnapshot => {
-                    if (!querySnapshot.empty) {
-                        querySnapshot.forEach(doc => {
-                            doc.ref.update({
-                                assignedTo: employeeName
-                            });
-                        });
-                    } else {
-                        // Create new completion record with assignment
-                        db.collection('taskCompletions').add({
-                            taskId,
-                            area: selectedArea,
-                            assignedTo: employeeName,
-                            completedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            comment: ''
-                        });
-                    }
-                });
-        }
-
-        // Check for 11 PM to reset tasks
-        function checkForReset() {
-            const now = new Date();
-            if (now.getHours() === 23 && now.getMinutes() === 0) {
-                // Archive today's completions
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                db.collection('taskCompletions')
-                    .where('completedAt', '>=', today)
-                    .get()
-                    .then(querySnapshot => {
-                        const batch = db.batch();
-                        querySnapshot.forEach(doc => {
-                            const data = doc.data();
-                            // Add to archive
-                            db.collection('taskArchive').add({
-                                ...data,
-                                archivedAt: firebase.firestore.FieldValue.serverTimestamp()
-                            });
-                            // Delete from current completions
-                            batch.delete(doc.ref);
-                        });
-                        return batch.commit();
-                    })
+        function deleteTask(taskId) {
+            if (confirm('¿Está seguro que desea eliminar esta tarea?')) {
+                db.collection('maintenanceTasks').doc(taskId).delete()
                     .then(() => {
-                        completedTasks.clear();
-                        displayTasks();
+                        loadTasks();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Hubo un error al eliminar la tarea. Por favor, inténtelo de nuevo.');
                     });
             }
         }
 
-        // Function to check if a task should be shown today based on its frequency
-        function shouldShowTaskToday(task) {
-            const today = new Date();
-            const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-            const dayOfMonth = today.getDate();
-            const month = today.getMonth();
-
-            switch(task.frequency) {
-                case 'Diario':
-                    return true;
-                case 'Dos Veces en Semana':
-                    // Show on Monday and Thursday (1 and 4)
-                    return dayOfWeek === 1 || dayOfWeek === 4;
-                case 'Semanal':
-                    // Show on Monday
-                    return dayOfWeek === 1;
-                case 'Dos Veces al Mes':
-                    // Show on 1st and 15th
-                    return dayOfMonth === 1 || dayOfMonth === 15;
-                case 'Mensual':
-                    // Show on 1st of each month
-                    return dayOfMonth === 1;
-                case 'Cada Dos Meses':
-                    // Show on 1st of even months (0, 2, 4, 6, 8, 10)
-                    return dayOfMonth === 1 && month % 2 === 0;
-                default:
-                    return false;
-            }
+        // Edit modal functions
+        function openEditModal(taskId, title, area, frequency) {
+            document.getElementById('editTaskId').value = taskId;
+            document.getElementById('editTaskTitle').value = title;
+            document.getElementById('editTaskArea').value = area;
+            document.getElementById('editTaskFrequency').value = frequency;
+            document.getElementById('editModal').style.display = 'block';
         }
 
-        // Check every minute
-        setInterval(checkForReset, 60000);
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // Edit form submission
+        document.getElementById('editTaskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const taskId = document.getElementById('editTaskId').value;
+            const updatedData = {
+                title: document.getElementById('editTaskTitle').value,
+                area: document.getElementById('editTaskArea').value,
+                frequency: document.getElementById('editTaskFrequency').value
+            };
+
+            db.collection('maintenanceTasks').doc(taskId).update(updatedData)
+                .then(() => {
+                    closeEditModal();
+                    loadTasks();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Hubo un error al actualizar la tarea. Por favor, inténtelo de nuevo.');
+                });
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target == modal) {
+                closeEditModal();
+            }
+        }
     </script>
 </body>
 </html> 

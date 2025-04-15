@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>King Uniforms - Reportes</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Initialize Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDEIvgnnOmz1dkxvMRzaK1JzIf5H_L5JE",
+            authDomain: "king-uniforms-drivers.firebaseapp.com",
+            projectId: "king-uniforms-drivers",
+            storageBucket: "king-uniforms-drivers.firebasestorage.app",
+            messagingSenderId: "543363951334",
+            appId: "1:543363951334:web:7300f1dc4b2b9a47f12927",
+            measurementId: "G-NW0DZ41JXD"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+    
+    <style>
+        :root {
+            --king-red: #E31837;
+            --king-blue: #003B71;
+            --king-yellow: #FFB81C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            position: relative;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 20px auto;
+            border-top: 5px solid var(--king-blue);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo-container img {
+            max-width: 300px;
+            height: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--king-blue);
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--king-blue);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--king-blue);
+            box-shadow: 0 0 0 3px rgba(0, 59, 113, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23003B71' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: var(--king-red);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background-color: #c41230;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(227, 24, 55, 0.2);
+        }
+
+        .export-btn {
+            background-color: var(--king-yellow);
+            color: var(--king-blue);
+        }
+
+        .export-btn:hover {
+            background-color: #e5a619;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 1.1rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .data-table th {
+            background-color: var(--king-blue);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--king-blue);
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 59, 113, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--king-blue);
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .summary {
+            background-color: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+        }
+
+        .summary h3 {
+            color: var(--king-blue);
+            margin-bottom: 1rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-item h4 {
+            color: var(--king-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-item p {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--king-red);
+        }
+
+        .summary-section {
+            background-color: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .summary-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-card h3 {
+            color: var(--king-blue);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .summary-card p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .summary-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--king-red);
+            margin: 0.5rem 0;
+        }
+
+        .today-summary {
+            background-color: var(--king-yellow);
+            color: var(--king-blue);
+        }
+
+        .today-summary h3,
+        .today-summary .value {
+            color: var(--king-blue);
+        }
+
+        .back-btn-top {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: auto;
+            padding: 8px 16px;
+            flex: 0 1 auto;
+        }
+
+        .back-btn {
+            background-color: var(--king-blue);
+        }
+
+        .back-btn:hover {
+            background-color: #002b57;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button onclick="window.location.href='home.html'" class="back-btn back-btn-top">Volver</button>
+        <div class="logo-container">
+            <img src="King_Uniforms_LOGO.png" alt="Logo de King Uniforms">
+        </div>
+        <h1>Reportes de Entradas</h1>
+
+        <div class="filters">
+            <div class="form-group">
+                <label for="driverFilter">Chofer</label>
+                <select id="driverFilter">
+                    <option value="">Todos los Choferes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="clientFilter">Cliente</label>
+                <select id="clientFilter">
+                    <option value="">Todos los Clientes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dateFilter">Rango de Fechas</label>
+                <select id="dateFilter" onchange="toggleCustomDateRange()">
+                    <option value="all">Todo el Tiempo</option>
+                    <option value="today">Hoy</option>
+                    <option value="week">Esta Semana</option>
+                    <option value="month">Este Mes</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+                <div id="customDateRange" style="display: none; margin-top: 1rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <label for="startDate">Fecha Inicial</label>
+                            <input type="date" id="startDate" style="width: 100%;">
+                        </div>
+                        <div>
+                            <label for="endDate">Fecha Final</label>
+                            <input type="date" id="endDate" style="width: 100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button onclick="applyFilters()">Aplicar Filtros</button>
+            <button class="export-btn" onclick="exportToExcel()">Exportar a Excel</button>
+        </div>
+
+        <div class="summary">
+            <h3>Resumen</h3>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <h4>Total de Carros</h4>
+                    <p id="totalEntries">0</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Total de Libras</h4>
+                    <p id="totalPounds">0</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Promedio por Carro</h4>
+                    <p id="averagePounds">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-section">
+            <div class="summary-card today-summary">
+                <h3>Resumen de Hoy</h3>
+                <div class="value" id="todayTotalPounds">0</div>
+                <p>Libras Totales</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total de Carros</h3>
+                <div class="value" id="totalCarts">0</div>
+                <p>Carros Registrados</p>
+            </div>
+            <div class="summary-card">
+                <h3>Promedio por Carro</h3>
+                <div class="value" id="averagePounds">0</div>
+                <p>Libras por Carro</p>
+            </div>
+        </div>
+
+        <div id="loading" class="loading">Cargando datos...</div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Chofer</th>
+                    <th>Cliente</th>
+                    <th>Libras</th>
+                    <th>Carros</th>
+                </tr>
+            </thead>
+            <tbody id="dataTableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let allData = [];
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            
+            const today = new Date();
+            const startDate = document.getElementById('startDate');
+            const endDate = document.getElementById('endDate');
+            
+            // Format date as YYYY-MM-DD
+            const formatDate = (date) => {
+                return date.toISOString().split('T')[0];
+            };
+            
+            startDate.value = formatDate(today);
+            endDate.value = formatDate(today);
+        });
+
+        function loadData() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+
+            db.collection('driverEntries')
+                .orderBy('timestamp', 'desc')
+                .get()
+                .then((querySnapshot) => {
+                    allData = [];
+                    const drivers = new Set();
+                    const clients = new Set();
+
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        allData.push(data);
+                        drivers.add(data.driverName);
+                        clients.add(data.clientName);
+                    });
+
+                    // Populate filter dropdowns
+                    const driverFilter = document.getElementById('driverFilter');
+                    const clientFilter = document.getElementById('clientFilter');
+
+                    drivers.forEach(driver => {
+                        const option = document.createElement('option');
+                        option.value = driver;
+                        option.textContent = driver;
+                        driverFilter.appendChild(option);
+                    });
+
+                    clients.forEach(client => {
+                        const option = document.createElement('option');
+                        option.value = client;
+                        option.textContent = client;
+                        clientFilter.appendChild(option);
+                    });
+
+                    displayData(allData);
+                    loading.style.display = 'none';
+                });
+        }
+
+        function toggleCustomDateRange() {
+            const customDateRange = document.getElementById('customDateRange');
+            const dateFilter = document.getElementById('dateFilter');
+            customDateRange.style.display = dateFilter.value === 'custom' ? 'block' : 'none';
+        }
+
+        function applyFilters() {
+            const driver = document.getElementById('driverFilter').value;
+            const client = document.getElementById('clientFilter').value;
+            const dateRange = document.getElementById('dateFilter').value;
+
+            let filteredData = allData;
+
+            if (driver) {
+                filteredData = filteredData.filter(entry => entry.driverName === driver);
+            }
+            if (client) {
+                filteredData = filteredData.filter(entry => entry.clientName === client);
+            }
+
+            const now = new Date();
+            if (dateRange === 'today') {
+                filteredData = filteredData.filter(entry => {
+                    const entryDate = new Date(entry.timestamp.toDate());
+                    return entryDate.toDateString() === now.toDateString();
+                });
+            } else if (dateRange === 'week') {
+                const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+                filteredData = filteredData.filter(entry => {
+                    const entryDate = new Date(entry.timestamp.toDate());
+                    return entryDate >= weekAgo;
+                });
+            } else if (dateRange === 'month') {
+                const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                filteredData = filteredData.filter(entry => {
+                    const entryDate = new Date(entry.timestamp.toDate());
+                    return entryDate >= monthAgo;
+                });
+            } else if (dateRange === 'custom') {
+                const startDate = new Date(document.getElementById('startDate').value);
+                const endDate = new Date(document.getElementById('endDate').value);
+                
+                if (startDate && endDate) {
+                    // Set end date to end of day
+                    endDate.setHours(23, 59, 59, 999);
+                    
+                    filteredData = filteredData.filter(entry => {
+                        const entryDate = new Date(entry.timestamp.toDate());
+                        return entryDate >= startDate && entryDate <= endDate;
+                    });
+                }
+            }
+
+            displayData(filteredData);
+        }
+
+        function displayData(data) {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
+            
+            // Get today's date at midnight
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            let totalPounds = 0;
+            let totalCarts = 0;
+            let todayPounds = 0;
+            let todayCarts = 0;
+            
+            // Group data by driver and client
+            const groupedData = {};
+            
+            data.forEach(entry => {
+                const key = `${entry.driverName}-${entry.clientName}`;
+                if (!groupedData[key]) {
+                    groupedData[key] = {
+                        driverName: entry.driverName,
+                        clientName: entry.clientName,
+                        totalPounds: 0,
+                        totalCarts: 0,
+                        lastDate: entry.timestamp
+                    };
+                }
+                
+                groupedData[key].totalPounds += Number(entry.pounds);
+                groupedData[key].totalCarts += 1;
+                
+                // Update total counts
+                totalPounds += Number(entry.pounds);
+                totalCarts += 1;
+                
+                // Check if entry is from today
+                const entryDate = entry.timestamp.toDate();
+                if (entryDate.toDateString() === today.toDateString()) {
+                    todayPounds += Number(entry.pounds);
+                    todayCarts += 1;
+                }
+            });
+            
+            // Display grouped data
+            Object.values(groupedData).forEach(group => {
+                const row = document.createElement('tr');
+                
+                // Format date properly
+                const formattedDate = group.lastDate.toDate().toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                row.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td>${group.driverName}</td>
+                    <td>${group.clientName}</td>
+                    <td>${group.totalPounds}</td>
+                    <td>${group.totalCarts}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Update summary
+            document.getElementById('totalEntries').textContent = totalCarts;
+            document.getElementById('totalPounds').textContent = totalPounds;
+            document.getElementById('averagePounds').textContent = totalCarts > 0 ? (totalPounds / totalCarts).toFixed(2) : '0';
+            
+            // Update today's summary
+            document.getElementById('todayTotalPounds').textContent = todayPounds;
+            document.getElementById('totalCarts').textContent = todayCarts;
+            document.getElementById('averagePounds').textContent = todayCarts > 0 ? (todayPounds / todayCarts).toFixed(2) : '0';
+        }
+
+        function exportToExcel() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+
+            const driver = document.getElementById('driverFilter').value;
+            const client = document.getElementById('clientFilter').value;
+            const dateRange = document.getElementById('dateFilter').value;
+
+            let filename = 'reporte_entradas';
+            if (driver) filename += `_${driver}`;
+            if (client) filename += `_${client}`;
+            if (dateRange !== 'all') filename += `_${dateRange}`;
+            filename += '.xlsx';
+
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Get table data
+            const table = document.getElementById('dataTableBody');
+            const rows = Array.from(table.getElementsByTagName('tr'));
+            const data = rows.map(row => {
+                const cells = row.getElementsByTagName('td');
+                return Array.from(cells).map(cell => cell.textContent);
+            });
+
+            // Add headers
+            const headers = ['Fecha', 'Chofer', 'Cliente', 'Total Libras', 'Total Carros'];
+            data.unshift(headers);
+
+            // Create worksheet
+            const ws = XLSX.utils.aoa_to_sheet(data);
+
+            // Set column widths
+            const colWidths = [
+                { wch: 20 }, // Date
+                { wch: 15 }, // Driver
+                { wch: 15 }, // Client
+                { wch: 12 }, // Total Pounds
+                { wch: 12 }  // Total Carts
+            ];
+            ws['!cols'] = colWidths;
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
+
+            // Generate Excel file
+            XLSX.writeFile(wb, filename);
+            
+            loading.style.display = 'none';
+        }
+    </script>
+    <!-- Add SheetJS library for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</body>
+</html> 

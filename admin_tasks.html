@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>King Uniforms - Administración de Tareas</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Initialize Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDEIvgnnOmz1dkxvMRzaK1JzIf5H_L5JE",
+            authDomain: "king-uniforms-drivers.firebaseapp.com",
+            projectId: "king-uniforms-drivers",
+            storageBucket: "king-uniforms-drivers.firebasestorage.app",
+            messagingSenderId: "543363951334",
+            appId: "1:543363951334:web:7300f1dc4b2b9a47f12927",
+            measurementId: "G-NW0DZ41JXD"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+    
+    <style>
+        :root {
+            --king-red: #E31837;
+            --king-blue: #003B71;
+            --king-yellow: #FFB81C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo-container img {
+            max-width: 300px;
+            height: auto;
+        }
+
+        .admin-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-top: 5px solid var(--king-blue);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--king-blue);
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--king-blue);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--king-blue);
+            box-shadow: 0 0 0 3px rgba(0, 59, 113, 0.1);
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: var(--king-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--king-red);
+            transform: translateY(-1px);
+        }
+
+        .tasks-list {
+            margin-top: 2rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .task-item {
+            padding: 1rem;
+            border-bottom: 1px solid #ddd;
+            background-color: white;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: var(--king-blue);
+            font-size: 1.1rem;
+        }
+
+        .task-description {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .task-actions button {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+
+        .edit-btn {
+            background-color: var(--king-yellow);
+            color: var(--king-blue);
+        }
+
+        .delete-btn {
+            background-color: var(--king-red);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .nav-buttons button {
+            flex: 1;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            color: var(--king-blue);
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: rgba(0, 59, 113, 0.1);
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="logo-container">
+            <img src="King_Uniforms_LOGO.png" alt="Logo de King Uniforms">
+        </div>
+        <h1>Administración de Tareas</h1>
+
+        <div class="form-group">
+            <label for="taskTitle">Título de la Tarea</label>
+            <input type="text" id="taskTitle" placeholder="Ingrese el título de la tarea">
+        </div>
+        <div class="form-group">
+            <label for="taskDescription">Descripción</label>
+            <textarea id="taskDescription" placeholder="Ingrese la descripción de la tarea"></textarea>
+        </div>
+        <button onclick="addTask()">Agregar Tarea</button>
+
+        <div class="tasks-list" id="tasksList">
+            <!-- Task items will be added here dynamically -->
+        </div>
+
+        <div class="nav-buttons">
+            <button onclick="window.location.href='admin.html'">Volver al Panel</button>
+            <button onclick="window.location.href='index.html'" class="edit-btn">Ir al Formulario</button>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            ¡Operación completada exitosamente!
+        </div>
+    </div>
+
+    <script>
+        // Load tasks when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTasks();
+        });
+
+        function loadTasks() {
+            const tasksList = document.getElementById('tasksList');
+            tasksList.innerHTML = '';
+
+            db.collection('tasks').get()
+                .then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        const task = doc.data();
+                        addTaskToList(task, doc.id);
+                    });
+                });
+        }
+
+        function addTask() {
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+            
+            if (!title) return;
+
+            const task = {
+                title: title,
+                description: description,
+                createdAt: firebase.firestore.Timestamp.now()
+            };
+
+            db.collection('tasks').add(task)
+                .then(() => {
+                    document.getElementById('taskTitle').value = '';
+                    document.getElementById('taskDescription').value = '';
+                    loadTasks();
+                    showSuccessMessage();
+                });
+        }
+
+        function addTaskToList(task, taskId) {
+            const tasksList = document.getElementById('tasksList');
+            const item = document.createElement('div');
+            item.className = 'task-item';
+            item.innerHTML = `
+                <div class="task-header">
+                    <span class="task-title">${task.title}</span>
+                    <div class="task-actions">
+                        <button class="edit-btn" onclick="editTask('${taskId}', '${task.title}', '${task.description}')">Editar</button>
+                        <button class="delete-btn" onclick="deleteTask('${taskId}')">Eliminar</button>
+                    </div>
+                </div>
+                <div class="task-description">${task.description}</div>
+            `;
+            tasksList.appendChild(item);
+        }
+
+        function editTask(taskId, currentTitle, currentDescription) {
+            const newTitle = prompt('Ingrese el nuevo título de la tarea:', currentTitle);
+            const newDescription = prompt('Ingrese la nueva descripción:', currentDescription);
+            
+            if (newTitle && newTitle.trim() !== currentTitle) {
+                db.collection('tasks').doc(taskId).update({
+                    title: newTitle.trim(),
+                    description: newDescription.trim()
+                })
+                .then(() => {
+                    loadTasks();
+                    showSuccessMessage();
+                });
+            }
+        }
+
+        function deleteTask(taskId) {
+            if (confirm('¿Está seguro que desea eliminar esta tarea?')) {
+                db.collection('tasks').doc(taskId).delete()
+                    .then(() => {
+                        loadTasks();
+                        showSuccessMessage();
+                    });
+            }
+        }
+
+        function showSuccessMessage() {
+            const message = document.getElementById('successMessage');
+            message.style.display = 'block';
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 

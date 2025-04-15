@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>King Uniforms - Registro de Tareas</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Initialize Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDEIvgnnOmz1dkxvMRzaK1JzIf5H_L5JE",
+            authDomain: "king-uniforms-drivers.firebaseapp.com",
+            projectId: "king-uniforms-drivers",
+            storageBucket: "king-uniforms-drivers.firebasestorage.app",
+            messagingSenderId: "543363951334",
+            appId: "1:543363951334:web:7300f1dc4b2b9a47f12927",
+            measurementId: "G-NW0DZ41JXD"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+    
+    <style>
+        :root {
+            --king-red: #E31837;
+            --king-blue: #003B71;
+            --king-yellow: #FFB81C;
+            --progress-bg: #e0e0e0;
+            --progress-fill: #4CAF50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 20px auto;
+            border-top: 5px solid var(--king-blue);
+            flex: 1;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-container img {
+            max-width: 300px;
+            height: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--king-blue);
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-buttons button {
+            padding: 12px 24px;
+            background-color: var(--king-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-buttons button:hover {
+            background-color: var(--king-red);
+            transform: translateY(-2px);
+        }
+
+        .area-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .area-card {
+            background-color: #f9f9f9;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            border-top: 4px solid var(--king-yellow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .area-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .area-card h2 {
+            color: var(--king-blue);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .area-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .area-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--king-red);
+        }
+
+        .progress-container {
+            margin-top: auto;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: var(--progress-bg);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--progress-fill);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            color: var(--king-blue);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading" style="display: none;">
+        Cargando progreso...
+    </div>
+
+    <div class="container">
+        <div class="logo-container">
+            <img src="King_Uniforms_LOGO.png" alt="Logo de King Uniforms">
+        </div>
+        <h1>Registro de Tareas por Área</h1>
+
+        <div class="nav-buttons">
+            <button onclick="window.location.href='index.html'">Volver al Inicio</button>
+        </div>
+
+        <div class="area-grid">
+            <a href="mangle1_tareas.html" class="area-card" data-area="Mangle 1">
+                <div class="icon">🏭</div>
+                <h2>Mangle 1</h2>
+                <p>Ver y completar tareas de Mangle 1</p>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">0% Completado</div>
+                </div>
+            </a>
+
+            <a href="mangle2_tareas.html" class="area-card" data-area="Mangle 2">
+                <div class="icon">🏭</div>
+                <h2>Mangle 2</h2>
+                <p>Ver y completar tareas de Mangle 2</p>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">0% Completado</div>
+                </div>
+            </a>
+
+            <a href="doblado_tareas.html" class="area-card" data-area="Doblado">
+                <div class="icon">📦</div>
+                <h2>Doblado</h2>
+                <p>Ver y completar tareas de Doblado</p>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">0% Completado</div>
+                </div>
+            </a>
+
+            <a href="supervisores_tareas.html" class="area-card" data-area="Supervisores">
+                <div class="icon">👥</div>
+                <h2>Supervisores</h2>
+                <p>Ver y completar tareas de Supervisores</p>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">0% Completado</div>
+                </div>
+            </a>
+
+            <a href="lavanderos_tareas.html" class="area-card" data-area="Lavanderos">
+                <div class="icon">🧺</div>
+                <h2>Lavanderos</h2>
+                <p>Ver y completar tareas de Lavanderos</p>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">0% Completado</div>
+                </div>
+            </a>
+
+            <a href="uniformes_tareas.html" class="area-card" data-area="Uniformes">
+                <div class="icon">👕</div>
+                <h2>Uniformes</h2>
+                <p>Ver y completar tareas de Uniformes</p>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">0% Completado</div>
+                </div>
+            </a>
+
+            <a href="segregado_tareas.html" class="area-card" data-area="Segregado">
+                <div class="icon">🔄</div>
+                <h2>Segregado</h2>
+                <p>Ver y completar tareas de Segregado</p>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">0% Completado</div>
+                </div>
+            </a>
+
+            <a href="mantenimiento_tareas.html" class="area-card" data-area="Mantenimiento">
+                <div class="icon">🔧</div>
+                <h2>Mantenimiento</h2>
+                <p>Ver y completar tareas de Mantenimiento</p>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">0% Completado</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        © 2024 King Uniforms - Todos los derechos reservados
+    </footer>
+
+    <script>
+        // Function to get today's date at midnight
+        function getTodayStart() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return today;
+        }
+
+        // Function to calculate and update progress for each area
+        async function updateProgress() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+
+            try {
+                const areaCards = document.querySelectorAll('.area-card');
+                const todayStart = getTodayStart();
+
+                for (const card of areaCards) {
+                    const area = card.getAttribute('data-area');
+                    const progressFill = card.querySelector('.progress-fill');
+                    const progressText = card.querySelector('.progress-text');
+
+                    // Get all tasks for this area
+                    const tasksSnapshot = await db.collection('maintenanceTasks')
+                        .where('area', '==', area)
+                        .get();
+
+                    let totalTasks = 0;
+                    let completedTasks = 0;
+
+                    tasksSnapshot.forEach(doc => {
+                        const task = doc.data();
+                        totalTasks++;
+                        if (task.completed && task.completedAt) {
+                            const completedDate = task.completedAt.toDate();
+                            if (completedDate >= todayStart) {
+                                completedTasks++;
+                            }
+                        }
+                    });
+
+                    // Calculate percentage
+                    const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+                    // Update progress bar and text
+                    progressFill.style.width = `${percentage}%`;
+                    progressText.textContent = `${percentage}% Completado`;
+                }
+            } catch (error) {
+                console.error('Error updating progress:', error);
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // Update progress when page loads
+        document.addEventListener('DOMContentLoaded', updateProgress);
+
+        // Update progress every minute
+        setInterval(updateProgress, 60000);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>King Uniforms - Tareas Segregado</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Initialize Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDEIvgnnOmz1dkxvMRzaK1JzIf5H_L5JE",
+            authDomain: "king-uniforms-drivers.firebaseapp.com",
+            projectId: "king-uniforms-drivers",
+            storageBucket: "king-uniforms-drivers.firebasestorage.app",
+            messagingSenderId: "543363951334",
+            appId: "1:543363951334:web:7300f1dc4b2b9a47f12927",
+            measurementId: "G-NW0DZ41JXD"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+    
+    <style>
+        :root {
+            --king-red: #E31837;
+            --king-blue: #003B71;
+            --king-yellow: #FFB81C;
+            --completed-bg: #e8f5e9;
+            --completed-border: #4CAF50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-container img {
+            max-width: 300px;
+            height: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--king-blue);
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-buttons button {
+            padding: 12px 24px;
+            background-color: var(--king-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-buttons button:hover {
+            background-color: var(--king-red);
+            transform: translateY(-2px);
+        }
+
+        .task-list {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-item {
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-left: 4px solid var(--king-blue);
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-item.completed {
+            background-color: var(--completed-bg);
+            border-left-color: var(--completed-border);
+            order: 1;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--king-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .task-item.completed .task-title {
+            color: #4CAF50;
+            text-decoration: line-through;
+        }
+
+        .task-frequency {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .task-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .complete-btn {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .complete-btn:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .complete-btn.completed {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--king-blue);
+            font-size: 1.2rem;
+        }
+
+        .date-display {
+            text-align: center;
+            color: var(--king-blue);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="King_Uniforms_LOGO.png" alt="Logo de King Uniforms">
+        </div>
+        <h1>Tareas Segregado</h1>
+
+        <div class="nav-buttons">
+            <button onclick="window.location.href='registro_tareas.html'">Volver a Registro de Tareas</button>
+            <button onclick="window.location.href='index.html'">Volver al Inicio</button>
+        </div>
+
+        <div class="date-display" id="currentDate"></div>
+
+        <div class="task-list" id="taskList">
+            <div class="loading">Cargando tareas...</div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let tasks = [];
+        const AREA = 'Segregado';
+
+        // Update date display
+        function updateDateDisplay() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('es-ES', options);
+        }
+
+        // Load tasks when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDateDisplay();
+            loadTasks();
+            // Check for task reset every minute
+            setInterval(checkForReset, 60000);
+        });
+
+        function loadTasks() {
+            const loading = document.querySelector('.loading');
+            loading.style.display = 'block';
+
+            db.collection('maintenanceTasks')
+                .where('area', '==', AREA)
+                .get()
+                .then(querySnapshot => {
+                    tasks = [];
+                    querySnapshot.forEach(doc => {
+                        const task = {
+                            id: doc.id,
+                            ...doc.data()
+                        };
+                        tasks.push(task);
+                    });
+                    displayTasks();
+                    loading.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error loading tasks:', error);
+                    loading.style.display = 'none';
+                });
+        }
+
+        function displayTasks() {
+            const container = document.getElementById('taskList');
+            container.innerHTML = '';
+
+            // Sort tasks: completed tasks go to the bottom
+            tasks.sort((a, b) => {
+                if (a.completed === b.completed) return 0;
+                return a.completed ? 1 : -1;
+            });
+
+            tasks.forEach(task => {
+                const taskElement = createTaskElement(task);
+                container.appendChild(taskElement);
+            });
+
+            if (tasks.length === 0) {
+                container.innerHTML = '<div class="loading">No hay tareas para hoy</div>';
+            }
+        }
+
+        function createTaskElement(task) {
+            const taskElement = document.createElement('div');
+            taskElement.className = `task-item ${task.completed ? 'completed' : ''}`;
+
+            taskElement.innerHTML = `
+                <div class="task-info">
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-frequency">${task.frequency}</div>
+                </div>
+                <div class="task-controls">
+                    <button 
+                        class="complete-btn ${task.completed ? 'completed' : ''}"
+                        onclick="toggleTaskCompletion('${task.id}')"
+                        ${task.completed ? 'disabled' : ''}>
+                        ${task.completed ? 'Completada' : 'Marcar como Completada'}
+                    </button>
+                </div>
+            `;
+
+            return taskElement;
+        }
+
+        function toggleTaskCompletion(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            const newStatus = !task.completed;
+            
+            db.collection('maintenanceTasks').doc(taskId).update({
+                completed: newStatus,
+                completedAt: newStatus ? firebase.firestore.FieldValue.serverTimestamp() : null
+            })
+            .then(() => {
+                task.completed = newStatus;
+                displayTasks();
+            })
+            .catch(error => {
+                console.error('Error updating task status:', error);
+                alert('Error al actualizar el estado de la tarea. Por favor intente nuevamente.');
+            });
+        }
+
+        function checkForReset() {
+            const now = new Date();
+            // Check if it's midnight (00:00)
+            if (now.getHours() === 0 && now.getMinutes() === 0) {
+                resetTasks();
+            }
+        }
+
+        function resetTasks() {
+            // Reset all tasks for this area
+            const batch = db.batch();
+            
+            tasks.forEach(task => {
+                const taskRef = db.collection('maintenanceTasks').doc(task.id);
+                batch.update(taskRef, {
+                    completed: false,
+                    completedAt: null
+                });
+            });
+
+            batch.commit().then(() => {
+                loadTasks();
+                updateDateDisplay();
+            }).catch(error => {
+                console.error('Error resetting tasks:', error);
+            });
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>King Uniforms - Administración de Boletas</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Initialize Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDEIvgnnOmz1dkxvMRzaK1JzIf5H_L5JE",
+            authDomain: "king-uniforms-drivers.firebaseapp.com",
+            projectId: "king-uniforms-drivers",
+            storageBucket: "king-uniforms-drivers.firebasestorage.app",
+            messagingSenderId: "543363951334",
+            appId: "1:543363951334:web:7300f1dc4b2b9a47f12927",
+            measurementId: "G-NW0DZ41JXD"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+    
+    <style>
+        :root {
+            --king-red: #E31837;
+            --king-blue: #003B71;
+            --king-yellow: #FFB81C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo-container img {
+            max-width: 300px;
+            height: auto;
+        }
+
+        .admin-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            border-top: 5px solid var(--king-blue);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--king-blue);
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--king-blue);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--king-blue);
+            box-shadow: 0 0 0 3px rgba(0, 59, 113, 0.1);
+        }
+
+        .boletas-list {
+            margin-top: 2rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .boleta-item {
+            padding: 1rem;
+            border-bottom: 1px solid #ddd;
+            background-color: white;
+        }
+
+        .boleta-item:last-child {
+            border-bottom: none;
+        }
+
+        .boleta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .boleta-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--king-blue);
+            font-size: 0.9rem;
+        }
+
+        .info-value {
+            color: #666;
+        }
+
+        .boleta-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: var(--king-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--king-red);
+            transform: translateY(-1px);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .nav-buttons button {
+            flex: 1;
+        }
+
+        .edit-btn {
+            background-color: var(--king-yellow);
+            color: var(--king-blue);
+        }
+
+        .delete-btn {
+            background-color: var(--king-red);
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            color: var(--king-blue);
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: rgba(0, 59, 113, 0.1);
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="logo-container">
+            <img src="King_Uniforms_LOGO.png" alt="Logo de King Uniforms">
+        </div>
+        <h1>Administración de Boletas</h1>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="driverFilter">Filtrar por Chofer</label>
+                <select id="driverFilter" onchange="filterBoletas()">
+                    <option value="">Todos los Choferes</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="clientFilter">Filtrar por Cliente</label>
+                <select id="clientFilter" onchange="filterBoletas()">
+                    <option value="">Todos los Clientes</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="dateFilter">Filtrar por Fecha</label>
+                <input type="date" id="dateFilter" onchange="filterBoletas()">
+            </div>
+        </div>
+
+        <div class="boletas-list" id="boletasList">
+            <!-- Boletas will be added here dynamically -->
+        </div>
+
+        <div class="nav-buttons">
+            <button onclick="window.location.href='admin.html'">Volver al Panel</button>
+            <button onclick="window.location.href='index.html'" class="edit-btn">Ir al Formulario</button>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            ¡Operación completada exitosamente!
+        </div>
+    </div>
+
+    <script>
+        // Load drivers and clients for filters
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFilters();
+            loadBoletas();
+        });
+
+        function loadFilters() {
+            // Load drivers
+            db.collection('lists').doc('drivers').get()
+                .then(doc => {
+                    const driverSelect = document.getElementById('driverFilter');
+                    if (doc.exists) {
+                        const drivers = doc.data().items || [];
+                        drivers.forEach(driver => {
+                            const option = document.createElement('option');
+                            option.value = driver;
+                            option.textContent = driver;
+                            driverSelect.appendChild(option);
+                        });
+                    }
+                });
+
+            // Load clients
+            db.collection('lists').doc('clients').get()
+                .then(doc => {
+                    const clientSelect = document.getElementById('clientFilter');
+                    if (doc.exists) {
+                        const clients = doc.data().items || [];
+                        clients.forEach(client => {
+                            const option = document.createElement('option');
+                            option.value = client;
+                            option.textContent = client;
+                            clientSelect.appendChild(option);
+                        });
+                    }
+                });
+        }
+
+        function loadBoletas() {
+            const boletasList = document.getElementById('boletasList');
+            boletasList.innerHTML = '';
+
+            db.collection('driverEntries').get()
+                .then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        const boleta = doc.data();
+                        addBoletaToList(boleta, doc.id);
+                    });
+                });
+        }
+
+        function filterBoletas() {
+            const driverFilter = document.getElementById('driverFilter').value;
+            const clientFilter = document.getElementById('clientFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+
+            const boletasList = document.getElementById('boletasList');
+            boletasList.innerHTML = '';
+
+            let query = db.collection('driverEntries');
+
+            if (driverFilter) {
+                query = query.where('driverName', '==', driverFilter);
+            }
+            if (clientFilter) {
+                query = query.where('clientName', '==', clientFilter);
+            }
+
+            query.get()
+                .then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        const boleta = doc.data();
+                        if (dateFilter) {
+                            const boletaDate = boleta.timestamp.toDate().toISOString().split('T')[0];
+                            if (boletaDate === dateFilter) {
+                                addBoletaToList(boleta, doc.id);
+                            }
+                        } else {
+                            addBoletaToList(boleta, doc.id);
+                        }
+                    });
+                });
+        }
+
+        function addBoletaToList(boleta, boletaId) {
+            const boletasList = document.getElementById('boletasList');
+            const item = document.createElement('div');
+            item.className = 'boleta-item';
+            
+            const date = boleta.timestamp.toDate();
+            const formattedDate = date.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            item.innerHTML = `
+                <div class="boleta-header">
+                    <span class="info-label">Fecha: ${formattedDate}</span>
+                    <div class="boleta-actions">
+                        <button class="delete-btn" onclick="deleteBoleta('${boletaId}')">Eliminar</button>
+                    </div>
+                </div>
+                <div class="boleta-info">
+                    <div class="info-group">
+                        <span class="info-label">Chofer</span>
+                        <span class="info-value">${boleta.driverName}</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Cliente</span>
+                        <span class="info-value">${boleta.clientName}</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Libras</span>
+                        <span class="info-value">${boleta.pounds}</span>
+                    </div>
+                </div>
+            `;
+            boletasList.appendChild(item);
+        }
+
+        function deleteBoleta(boletaId) {
+            if (confirm('¿Está seguro que desea eliminar esta boleta?')) {
+                db.collection('driverEntries').doc(boletaId).delete()
+                    .then(() => {
+                        loadBoletas();
+                        showSuccessMessage();
+                    });
+            }
+        }
+
+        function showSuccessMessage() {
+            const message = document.getElementById('successMessage');
+            message.style.display = 'block';
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 
