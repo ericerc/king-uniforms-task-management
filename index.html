@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>King Uniforms - Inicio</title>
+    <title>King Uniforms - Home</title>
     <style>
         :root {
             --king-red: #E31837;
@@ -19,7 +19,7 @@
         }
 
         body {
-            background-color: #f5f5f5;
+            background-color: var(--king-blue);
             padding: 20px;
             min-height: 100vh;
             display: flex;
@@ -38,19 +38,32 @@
         }
 
         .logo-container {
-            text-align: center;
-            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            background-color: white;
+            border-radius: 10px;
         }
 
         .logo-container img {
-            max-width: 300px;
+            max-width: 150px;
             height: auto;
+            order: 2;
+        }
+
+        .logo-container h2 {
+            color: var(--king-blue);
+            font-size: 2.5rem;
+            margin: 0;
+            order: 1;
+            font-weight: 600;
         }
 
         h1 {
             text-align: center;
-            color: var(--king-blue);
-            margin-bottom: 2rem;
+            color: white;
+            margin-bottom: 0.5rem;
             font-size: 2.2rem;
         }
 
@@ -58,11 +71,11 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
-            margin: 2rem 0;
+            margin: 0.5rem 0;
         }
 
         .nav-card {
-            background-color: #f9f9f9;
+            background-color: white;
             padding: 2rem;
             border-radius: 8px;
             border: 1px solid #ddd;
@@ -119,7 +132,7 @@
         footer {
             text-align: center;
             padding: 1rem;
-            color: #666;
+            color: white;
             font-size: 0.9rem;
         }
     </style>
@@ -127,47 +140,48 @@
 <body>
     <div class="container">
         <div class="logo-container">
-            <img src="King_Uniforms_LOGO.png" alt="Logo de King Uniforms">
+            <img src="King_Uniforms_LOGO.png" alt="King Uniforms Logo">
+            <h2>Admin Panel</h2>
         </div>
-        <h1>Bienvenido a King Uniforms</h1>
+        <h1>Welcome to King Uniforms</h1>
 
         <div class="nav-grid">
             <a href="registro_libras.html" class="nav-card form-card">
                 <div class="icon">📝</div>
-                <h2>Formulario de Entrada</h2>
-                <p>Registrar nuevas entradas de choferes y clientes</p>
+                <h2>Entry Form</h2>
+                <p>Register new driver and client entries</p>
             </a>
 
             <a href="admin.html" class="nav-card admin-card">
                 <div class="icon">⚙️</div>
-                <h2>Administración</h2>
-                <p>Gestionar lista de choferes y clientes</p>
+                <h2>Settings</h2>
+                <p>Manage drivers and clients list</p>
             </a>
 
             <a href="reports.html" class="nav-card reports-card">
                 <div class="icon">📊</div>
-                <h2>Reportes de Pesos (LBS)</h2>
-                <p>Ver y exportar reportes de entradas</p>
+                <h2>Weight Reports (LBS)</h2>
+                <p>View and export entry reports</p>
             </a>
         </div>
 
         <div class="nav-grid">
             <a href="tasks.html" class="nav-card maintenance-card">
                 <div class="icon">🔧</div>
-                <h2>Lista de Mantenimiento</h2>
-                <p>Gestionar lista de mantenimiento</p>
+                <h2>Maintenance List</h2>
+                <p>Manage maintenance list</p>
             </a>
 
             <a href="registro_tareas.html" class="nav-card tasks-card">
                 <div class="icon">✅</div>
-                <h2>Registro de Tareas</h2>
-                <p>Marcar tareas completadas por área</p>
+                <h2>Task Registry</h2>
+                <p>Mark completed tasks by area</p>
             </a>
         </div>
     </div>
 
     <footer>
-        © 2024 King Uniforms - Todos los derechos reservados
+        © 2024 King Uniforms - All rights reserved
     </footer>
 </body>
 </html> 

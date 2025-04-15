@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>King Uniforms - Administración de Clientes</title>
+    <title>King Uniforms - Client Administration</title>
     <!-- Add Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -125,9 +125,9 @@
         }
 
         .client-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
             padding: 1rem;
             border-bottom: 1px solid #ddd;
             background-color: white;
@@ -156,6 +156,40 @@
             background-color: var(--king-red);
         }
 
+        .edit-form {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .edit-form.active {
+            display: block;
+        }
+
+        .edit-form .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .edit-form-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .edit-form-buttons button {
+            flex: 1;
+        }
+
+        .cancel-edit-btn {
+            background-color: #666;
+        }
+
+        .save-edit-btn {
+            background-color: var(--king-blue);
+        }
+
         .nav-buttons {
             display: flex;
             gap: 1rem;
@@ -175,32 +209,179 @@
             background-color: rgba(0, 59, 113, 0.1);
             border-radius: 6px;
         }
+
+        .frequency-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .time-input {
+            display: none;
+            margin-left: 0.5rem;
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .time-input:focus {
+            outline: none;
+            border-color: var(--king-blue);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .client-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .client-name {
+            font-weight: 600;
+            color: var(--king-blue);
+        }
+
+        .client-frequency {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .frequency-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            margin: 2px;
+            background-color: var(--king-yellow);
+            color: var(--king-blue);
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .same-time-container {
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background-color: rgba(0, 59, 113, 0.05);
+            border-radius: 6px;
+        }
+
+        .same-time-container input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .same-time-container label {
+            color: var(--king-blue);
+            font-weight: 600;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div class="admin-container">
         <div class="logo-container">
-            <img src="King_Uniforms_LOGO.png" alt="Logo de King Uniforms">
+            <img src="King_Uniforms_LOGO.png" alt="King Uniforms Logo">
         </div>
-        <h1>Administración de Clientes</h1>
+        <h1>Client Administration</h1>
 
         <div class="form-group">
-            <label for="clientName">Nombre del Cliente</label>
-            <input type="text" id="clientName" placeholder="Ingrese el nombre del cliente">
+            <label for="clientName">Client Name</label>
+            <input type="text" id="clientName" placeholder="Enter client name">
         </div>
-        <button onclick="addClient()">Agregar Cliente</button>
+
+        <div class="form-group">
+            <label>Visit Frequency</label>
+            <div class="frequency-checkboxes">
+                <div class="checkbox-container">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="monday" name="frequency" value="monday" onchange="toggleTimeInput(this)">
+                        Monday
+                    </label>
+                    <input type="time" id="monday-time" class="time-input" onchange="validateTime(this)">
+                </div>
+                <div class="checkbox-container">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="tuesday" name="frequency" value="tuesday" onchange="toggleTimeInput(this)">
+                        Tuesday
+                    </label>
+                    <input type="time" id="tuesday-time" class="time-input" onchange="validateTime(this)">
+                </div>
+                <div class="checkbox-container">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="wednesday" name="frequency" value="wednesday" onchange="toggleTimeInput(this)">
+                        Wednesday
+                    </label>
+                    <input type="time" id="wednesday-time" class="time-input" onchange="validateTime(this)">
+                </div>
+                <div class="checkbox-container">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="thursday" name="frequency" value="thursday" onchange="toggleTimeInput(this)">
+                        Thursday
+                    </label>
+                    <input type="time" id="thursday-time" class="time-input" onchange="validateTime(this)">
+                </div>
+                <div class="checkbox-container">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="friday" name="frequency" value="friday" onchange="toggleTimeInput(this)">
+                        Friday
+                    </label>
+                    <input type="time" id="friday-time" class="time-input" onchange="validateTime(this)">
+                </div>
+                <div class="checkbox-container">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="saturday" name="frequency" value="saturday" onchange="toggleTimeInput(this)">
+                        Saturday
+                    </label>
+                    <input type="time" id="saturday-time" class="time-input" onchange="validateTime(this)">
+                </div>
+                <div class="checkbox-container">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="sunday" name="frequency" value="sunday" onchange="toggleTimeInput(this)">
+                        Sunday
+                    </label>
+                    <input type="time" id="sunday-time" class="time-input" onchange="validateTime(this)">
+                </div>
+            </div>
+            <div class="same-time-container">
+                <input type="checkbox" id="sameTime" onchange="handleSameTime(this)">
+                <label for="sameTime">Assign the same time to all selected days</label>
+            </div>
+        </div>
+        <button onclick="addClient()">Add Client</button>
 
         <div class="clients-list" id="clientsList">
             <!-- Client items will be added here dynamically -->
         </div>
 
         <div class="nav-buttons">
-            <button onclick="window.location.href='admin.html'">Volver al Panel</button>
-            <button onclick="window.location.href='index.html'" class="edit-btn">Ir al Formulario</button>
+            <button onclick="window.location.href='admin.html'">Back to Panel</button>
+            <button onclick="window.location.href='index.html'" class="edit-btn">Go to Form</button>
         </div>
 
         <div class="success-message" id="successMessage">
-            ¡Operación completada exitosamente!
+            Operation completed successfully!
         </div>
     </div>
 
@@ -219,77 +400,312 @@
                     if (doc.exists) {
                         const clients = doc.data().items || [];
                         clients.forEach(client => {
-                            addClientToList(client);
+                            if (typeof client === 'object') {
+                                addClientToList(client.name, client.frequency);
+                            } else {
+                                // Handle legacy data
+                                addClientToList(client, []);
+                            }
                         });
                     }
                 });
+        }
+
+        function handleSameTime(checkbox) {
+            if (checkbox.checked) {
+                const checkedDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+                    .filter(day => document.getElementById(day).checked);
+                
+                if (checkedDays.length > 0) {
+                    const firstTime = document.getElementById(`${checkedDays[0]}-time`).value;
+                    if (firstTime) {
+                        checkedDays.forEach(day => {
+                            const timeInput = document.getElementById(`${day}-time`);
+                            timeInput.value = firstTime;
+                        });
+                    }
+                }
+            }
+        }
+
+        function toggleTimeInput(checkbox) {
+            const timeInput = document.getElementById(`${checkbox.id}-time`);
+            timeInput.style.display = checkbox.checked ? 'block' : 'none';
+            if (!checkbox.checked) {
+                timeInput.value = '';
+            } else if (document.getElementById('sameTime').checked) {
+                const checkedDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+                    .filter(day => document.getElementById(day).checked);
+                if (checkedDays.length > 0) {
+                    const firstTime = document.getElementById(`${checkedDays[0]}-time`).value;
+                    if (firstTime) {
+                        timeInput.value = firstTime;
+                    }
+                }
+            }
+        }
+
+        function validateTime(input) {
+            if (!input.value) {
+                const checkbox = document.getElementById(input.id.replace('-time', ''));
+                checkbox.checked = false;
+                input.style.display = 'none';
+            } else if (document.getElementById('sameTime').checked) {
+                const checkedDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+                    .filter(day => document.getElementById(day).checked);
+                checkedDays.forEach(day => {
+                    const timeInput = document.getElementById(`${day}-time`);
+                    timeInput.value = input.value;
+                });
+            }
         }
 
         function addClient() {
             const clientName = document.getElementById('clientName').value.trim();
             if (!clientName) return;
 
+            const frequency = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+                .filter(day => document.getElementById(day).checked)
+                .map(day => ({
+                    day,
+                    time: document.getElementById(`${day}-time`).value
+                }));
+
+            if (frequency.some(f => !f.time)) {
+                alert('Please select a time for each selected day');
+                return;
+            }
+
             db.collection('lists').doc('clients').get()
                 .then(doc => {
                     const clients = doc.exists ? doc.data().items || [] : [];
-                    if (!clients.includes(clientName)) {
-                        clients.push(clientName);
+                    const existingClientIndex = clients.findIndex(c => 
+                        typeof c === 'object' ? c.name === clientName : c === clientName
+                    );
+
+                    if (existingClientIndex === -1) {
+                        clients.push({ name: clientName, frequency });
                         db.collection('lists').doc('clients').set({ items: clients })
                             .then(() => {
-                                addClientToList(clientName);
+                                addClientToList(clientName, frequency);
                                 document.getElementById('clientName').value = '';
+                                // Reset checkboxes and time inputs
+                                frequency.forEach(f => {
+                                    const checkbox = document.getElementById(f.day);
+                                    const timeInput = document.getElementById(`${f.day}-time`);
+                                    checkbox.checked = false;
+                                    timeInput.value = '';
+                                    timeInput.style.display = 'none';
+                                });
                                 showSuccessMessage();
                             });
                     }
                 });
         }
 
-        function addClientToList(client) {
+        function addClientToList(clientName, frequency) {
             const clientsList = document.getElementById('clientsList');
             const item = document.createElement('div');
             item.className = 'client-item';
+
+            const daysInSpanish = {
+                monday: 'Monday',
+                tuesday: 'Tuesday',
+                wednesday: 'Wednesday',
+                thursday: 'Thursday',
+                friday: 'Friday',
+                saturday: 'Saturday',
+                sunday: 'Sunday'
+            };
+
+            const frequencyHtml = frequency.length > 0 
+                ? `<div class="client-frequency">
+                    ${frequency.map(f => {
+                        const time = new Date(`2000-01-01T${f.time}`).toLocaleTimeString('es-ES', { 
+                            hour: '2-digit', 
+                            minute: '2-digit',
+                            hour12: true 
+                        });
+                        return `<span class="frequency-tag">${daysInSpanish[f.day]} ${time}</span>`;
+                    }).join('')}
+                   </div>`
+                : '';
+
+            const editFormHtml = `
+                <div class="form-group">
+                    <label for="edit-name-${clientName}">Client Name</label>
+                    <input type="text" id="edit-name-${clientName}" value="${clientName}" required>
+                </div>
+                <div class="form-group">
+                    <label>Visit Frequency</label>
+                    <div class="frequency-checkboxes">
+                        ${Object.entries(daysInSpanish).map(([day, dayName]) => {
+                            const dayFrequency = frequency.find(f => f.day === day);
+                            return `
+                                <div class="checkbox-container">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="edit-${day}-${clientName}" 
+                                            name="edit-frequency-${clientName}" 
+                                            value="${day}" 
+                                            ${dayFrequency ? 'checked' : ''} 
+                                            onchange="toggleEditTimeInput('${day}', '${clientName}')">
+                                        ${dayName}
+                                    </label>
+                                    <input type="time" id="edit-${day}-time-${clientName}" 
+                                        class="time-input" 
+                                        value="${dayFrequency ? dayFrequency.time : ''}"
+                                        style="display: ${dayFrequency ? 'block' : 'none'}"
+                                        onchange="validateEditTime('${day}', '${clientName}')">
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <div class="same-time-container">
+                        <input type="checkbox" id="edit-sameTime-${clientName}" onchange="handleEditSameTime('${clientName}')">
+                        <label for="edit-sameTime-${clientName}">Assign the same time to all selected days</label>
+                    </div>
+                </div>
+                <div class="edit-form-buttons">
+                    <button class="cancel-edit-btn" onclick="cancelEdit('${clientName}')">Cancel</button>
+                    <button class="save-edit-btn" onclick="saveEdit('${clientName}')">Save</button>
+                </div>
+            `;
+
             item.innerHTML = `
-                <span>${client}</span>
+                <div class="client-info">
+                    <div class="client-name">${clientName}</div>
+                    ${frequencyHtml}
+                </div>
                 <div class="client-actions">
-                    <button class="edit-btn" onclick="editClient('${client}')">Editar</button>
-                    <button class="delete-btn" onclick="deleteClient('${client}')">Eliminar</button>
+                    <button class="edit-btn" onclick="editClient('${clientName}')">Edit</button>
+                    <button class="delete-btn" onclick="deleteClient('${clientName}')">Delete</button>
+                </div>
+                <div class="edit-form" id="edit-form-${clientName}">
+                    ${editFormHtml}
                 </div>
             `;
             clientsList.appendChild(item);
         }
 
-        function editClient(client) {
-            const newName = prompt('Ingrese el nuevo nombre del cliente:', client);
-            if (newName && newName.trim() !== client) {
-                db.collection('lists').doc('clients').get()
-                    .then(doc => {
-                        const clients = doc.data().items || [];
-                        const index = clients.indexOf(client);
-                        if (index !== -1) {
-                            clients[index] = newName.trim();
-                            db.collection('lists').doc('clients').set({ items: clients })
-                                .then(() => {
-                                    loadClients();
-                                    showSuccessMessage();
-                                });
-                        }
-                    });
+        function toggleEditTimeInput(day, clientName) {
+            const timeInput = document.getElementById(`edit-${day}-time-${clientName}`);
+            const checkbox = document.getElementById(`edit-${day}-${clientName}`);
+            timeInput.style.display = checkbox.checked ? 'block' : 'none';
+            if (!checkbox.checked) {
+                timeInput.value = '';
+            } else if (document.getElementById(`edit-sameTime-${clientName}`).checked) {
+                const checkedDays = Object.keys(daysInSpanish)
+                    .filter(d => document.getElementById(`edit-${d}-${clientName}`).checked);
+                if (checkedDays.length > 0) {
+                    const firstTime = document.getElementById(`edit-${checkedDays[0]}-time-${clientName}`).value;
+                    if (firstTime) {
+                        timeInput.value = firstTime;
+                    }
+                }
             }
         }
 
-        function deleteClient(client) {
-            if (confirm('¿Está seguro que desea eliminar este cliente?')) {
-                db.collection('lists').doc('clients').get()
-                    .then(doc => {
-                        const clients = doc.data().items || [];
-                        const updatedClients = clients.filter(c => c !== client);
-                        db.collection('lists').doc('clients').set({ items: updatedClients })
-                            .then(() => {
-                                loadClients();
-                                showSuccessMessage();
-                            });
-                    });
+        function validateEditTime(day, clientName) {
+            const timeInput = document.getElementById(`edit-${day}-time-${clientName}`);
+            if (!timeInput.value) {
+                const checkbox = document.getElementById(`edit-${day}-${clientName}`);
+                checkbox.checked = false;
+                timeInput.style.display = 'none';
+            } else if (document.getElementById(`edit-sameTime-${clientName}`).checked) {
+                const checkedDays = Object.keys(daysInSpanish)
+                    .filter(d => document.getElementById(`edit-${d}-${clientName}`).checked);
+                checkedDays.forEach(d => {
+                    const dayTimeInput = document.getElementById(`edit-${d}-time-${clientName}`);
+                    dayTimeInput.value = timeInput.value;
+                });
             }
+        }
+
+        function handleEditSameTime(clientName) {
+            const sameTimeCheckbox = document.getElementById(`edit-sameTime-${clientName}`);
+            if (sameTimeCheckbox.checked) {
+                const checkedDays = Object.keys(daysInSpanish)
+                    .filter(day => document.getElementById(`edit-${day}-${clientName}`).checked);
+                
+                if (checkedDays.length > 0) {
+                    const firstTime = document.getElementById(`edit-${checkedDays[0]}-time-${clientName}`).value;
+                    if (firstTime) {
+                        checkedDays.forEach(day => {
+                            const timeInput = document.getElementById(`edit-${day}-time-${clientName}`);
+                            timeInput.value = firstTime;
+                        });
+                    }
+                }
+            }
+        }
+
+        function saveEdit(clientName) {
+            const nameInput = document.getElementById(`edit-name-${clientName}`);
+            const newName = nameInput.value.trim();
+            
+            const frequency = Object.keys(daysInSpanish)
+                .filter(day => document.getElementById(`edit-${day}-${clientName}`).checked)
+                .map(day => ({
+                    day,
+                    time: document.getElementById(`edit-${day}-time-${clientName}`).value
+                }));
+
+            if (frequency.some(f => !f.time)) {
+                alert('Please select a time for each selected day');
+                return;
+            }
+
+            const updatedClient = {
+                name: newName,
+                frequency: frequency
+            };
+
+            db.collection('lists').doc('clients').get()
+                .then(doc => {
+                    const clients = doc.data().items || [];
+                    const updatedClients = clients.map(c => {
+                        if (typeof c === 'object' && c.name === clientName) {
+                            return updatedClient;
+                        }
+                        return c;
+                    });
+                    return db.collection('lists').doc('clients').set({ items: updatedClients });
+                })
+                .then(() => {
+                    loadClients();
+                    showSuccessMessage('Client updated successfully');
+                })
+                .catch(error => {
+                    console.error('Error updating client:', error);
+                    alert('Error updating client. Please try again later.');
+                });
+        }
+
+        function deleteClient(clientName) {
+            db.collection('lists').doc('clients').get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const clients = doc.data().items || [];
+                        const updatedClients = clients.filter(c => 
+                            typeof c === 'object' ? c.name !== clientName : c !== clientName
+                        );
+                        return db.collection('lists').doc('clients').set({ items: updatedClients });
+                    }
+                })
+                .then(() => {
+                    loadClients();
+                    showSuccessMessage();
+                });
+        }
+
+        function editClient(clientName) {
+            const editForm = document.getElementById(`edit-form-${clientName}`);
+            editForm.classList.add('active');
+        }
+
+        function cancelEdit(clientName) {
+            const editForm = document.getElementById(`edit-form-${clientName}`);
+            editForm.classList.remove('active');
         }
 
         function showSuccessMessage() {
